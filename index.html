@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mars — Law School Data Tool · by 509α</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900&family=DM+Sans:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#06111E; --dark:#040D17; --green:#A0522D; --green-l:#D97757;
+  --green-pale:#1A0E08; --blue:#5AABCB; --blue-dim:#1E4A6A;
+  --white:#E8F4FF; --dim:#4A7A9B; --dimmer:#2A4A6A; --muted:#3A6A8A;
+  --red:#EF5350; --amber:#FFA726;
+  --sans:'DM Sans',sans-serif; --serif:'Playfair Display',serif;
+  --mono:'Share Tech Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:var(--sans);overflow-x:hidden;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;background:rgba(6,17,30,0.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(74,122,155,0.3);}
+.nav-logo{font-family:var(--serif);font-size:22px;font-weight:700;color:var(--white);letter-spacing:-1px;cursor:pointer;}
+.nav-logo span{color:var(--blue);}
+.nav-links{display:flex;gap:28px;align-items:center;}
+.nav-links a{font-size:13px;color:#7AAAC8;text-decoration:none;font-weight:500;transition:color .2s;}
+.nav-links a:hover{color:var(--white);}
+.nav-cta{background:#A0522D;color:var(--white);padding:8px 20px;font-size:13px;font-weight:600;text-decoration:none;border-radius:2px;font-family:var(--mono);letter-spacing:1px;transition:background .2s;}
+.nav-cta:hover{background:#E8714A;}
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 48px 80px;position:relative;overflow:hidden;}
+.hero-grid{position:absolute;inset:0;opacity:0.11;}
+.hero-content{max-width:760px;position:relative;z-index:2;}
+.hero-eyebrow{font-family:var(--mono);font-size:11px;color:#D97757;letter-spacing:3px;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.hero-eyebrow::before{content:'';width:24px;height:1px;background:var(--green-l);}
+.hero-h1{font-family:var(--serif);font-size:clamp(48px,6vw,80px);font-weight:900;color:var(--white);line-height:1.0;letter-spacing:-2px;margin-bottom:20px;}
+.hero-h1 em{font-style:italic;color:var(--blue);}
+.hero-sub{font-size:18px;color:#7AAAC8;font-weight:300;line-height:1.7;max-width:560px;margin-bottom:40px;}
+.hero-sub strong{color:var(--white);font-weight:500;}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:64px;}
+.btn-primary{background:#A0522D;color:var(--white);padding:14px 28px;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:background .2s;}
+.btn-primary:hover{background:#E8714A;}
+.btn-outline{background:transparent;color:#7AAAC8;padding:14px 28px;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border:1px solid rgba(74,122,155,0.35);cursor:pointer;transition:all .2s;}
+.btn-outline:hover{border-color:var(--blue);color:var(--blue);}
+.hero-stats{display:flex;gap:0;}
+.h-stat{padding:20px 32px;border:1px solid rgba(74,122,155,0.45);}
+.h-stat+.h-stat{border-left:none;}
+.h-stat-n{font-family:var(--serif);font-size:36px;font-weight:700;color:var(--white);display:block;line-height:1;}
+.h-stat-l{font-family:var(--mono);font-size:10px;color:#4A7A9B;letter-spacing:2px;text-transform:uppercase;margin-top:4px;display:block;}
+
+/* ── SEARCH + TABLE SECTION ── */
+.data-section{padding:80px 48px;background:var(--dark);}
+.section-header{margin-bottom:32px;}
+.section-eyebrow{font-family:var(--mono);font-size:11px;color:#D97757;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;}
+.section-title{font-family:var(--serif);font-size:40px;font-weight:700;color:var(--white);letter-spacing:-1px;margin-bottom:8px;}
+.section-sub{font-size:15px;color:#7AAAC8;font-weight:300;}
+
+/* Search + filters */
+.search-bar{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+.search-input{flex:1;min-width:260px;background:var(--bg);border:1px solid rgba(74,122,155,0.5);color:var(--white);padding:12px 16px;font-family:var(--sans);font-size:14px;outline:none;transition:border-color .2s;}
+.search-input:focus{border-color:#D97757;}
+.search-input::placeholder{color:#4A7A9B;}
+select.filter{background:var(--bg);border:1px solid rgba(74,122,155,0.35);color:#7AAAC8;padding:12px 16px;font-family:var(--mono);font-size:11px;letter-spacing:1px;outline:none;cursor:pointer;}
+select.filter:focus{border-color:#D97757;}
+select.filter option{background:var(--dark);}
+.result-count{font-family:var(--mono);font-size:11px;color:#4A7A9B;letter-spacing:1.5px;margin-bottom:16px;}
+
+/* Table */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{font-family:var(--mono);font-size:10px;color:#4A7A9B;letter-spacing:2px;text-transform:uppercase;padding:12px 14px;text-align:left;border-bottom:1px solid rgba(74,122,155,0.4);cursor:pointer;user-select:none;white-space:nowrap;background:var(--dark);}
+thead th:hover{color:var(--blue);}
+thead th.sorted{color:#D97757;}
+thead th.sorted::after{content:' ↓';}
+thead th.sorted.asc::after{content:' ↑';}
+tbody tr{border-bottom:1px solid rgba(74,122,155,0.18);cursor:pointer;transition:background .15s;}
+tbody tr:hover{background:rgba(74,122,155,0.1);}
+tbody td{padding:13px 14px;vertical-align:middle;}
+.school-name{font-weight:600;color:var(--white);}
+.val-green{color:#D97757;font-family:var(--mono);font-size:13px;}
+.val-blue{color:#6ABCDB;font-family:var(--mono);font-size:13px;}
+.val-red{color:#EF5350;font-family:var(--mono);font-size:13px;}
+.val-amber{color:#FFB74D;font-family:var(--mono);font-size:13px;}
+.val-white{color:#E8F4FF;font-family:var(--mono);font-size:13px;}
+.val-dim{color:#7AAAC8;font-family:var(--mono);font-size:13px;}
+.na{color:#6A9AB8;font-family:var(--mono);font-size:11px;}
+
+/* ── SCHOOL MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(4,13,23,0.85);z-index:200;backdrop-filter:blur(6px);overflow-y:auto;padding:40px 20px;}
+.modal-overlay.open{display:flex;align-items:flex-start;justify-content:center;}
+.modal{background:var(--bg);max-width:900px;width:100%;border:1px solid rgba(74,122,155,0.4);position:relative;}
+.modal-close{position:absolute;top:16px;right:16px;background:rgba(74,122,155,0.1);border:1px solid rgba(74,122,155,0.2);color:#7AAAC8;width:32px;height:32px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;z-index:10;}
+.modal-close:hover{color:var(--white);background:rgba(74,122,155,0.2);}
+.modal-header{padding:32px 36px 24px;border-bottom:1px solid rgba(74,122,155,0.3);}
+.modal-eyebrow{font-family:var(--mono);font-size:10px;color:#D97757;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.modal-name{font-family:var(--serif);font-size:32px;font-weight:700;color:var(--white);letter-spacing:-0.5px;}
+.modal-body{padding:28px 36px;display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.metric-group{background:var(--dark);padding:20px 22px;border-left:3px solid;}
+.mg-green{border-color:#A0522D;}
+.mg-blue{border-color:var(--blue);}
+.mg-red{border-color:var(--red);}
+.mg-amber{border-color:var(--amber);}
+.mg-label{font-family:var(--mono);font-size:10px;color:#4A7A9B;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+.mg-items{display:flex;flex-direction:column;gap:10px;}
+.mg-item{display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:1px solid rgba(74,122,155,0.18);}
+.mg-item:last-child{border-bottom:none;padding-bottom:0;}
+.mg-key{font-size:13px;color:#6A9AB8;font-weight:300;}
+.mg-val{font-family:var(--mono);font-size:14px;font-weight:600;}
+.modal-footer{padding:20px 36px;border-top:1px solid rgba(74,122,155,0.15);display:flex;align-items:center;justify-content:space-between;}
+.modal-note{font-family:var(--mono);font-size:10px;color:#4A7A9B;letter-spacing:1px;}
+.modal-cta{background:#A0522D;color:var(--white);padding:10px 22px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;}
+
+/* ── FEATURES ── */
+.features{padding:100px 48px;display:grid;grid-template-columns:repeat(3,1fr);gap:0;max-width:1200px;margin:0 auto;}
+.feat{padding:40px 36px;border:1px solid rgba(74,122,155,0.3);}
+.feat+.feat{border-left:none;}
+.feat-icon{margin-bottom:20px;}
+.feat-title{font-family:var(--serif);font-size:22px;font-weight:700;color:var(--white);margin-bottom:10px;}
+.feat-desc{font-size:14px;color:#7AAAC8;font-weight:300;line-height:1.7;}
+
+/* ── CTA ── */
+.cta-sec{background:var(--dark);padding:100px 48px;text-align:center;border-top:1px solid rgba(74,122,155,0.12);}
+.cta-h2{font-family:var(--serif);font-size:clamp(32px,4vw,52px);font-weight:900;color:var(--white);letter-spacing:-1px;margin-bottom:14px;}
+.cta-h2 em{font-style:italic;color:#D97757;}
+.cta-sub{font-size:16px;color:#7AAAC8;font-weight:300;margin-bottom:36px;}
+.cta-note{font-family:var(--mono);font-size:11px;color:#4A7A9B;letter-spacing:1.5px;margin-top:20px;}
+
+/* ── FOOTER ── */
+footer{background:var(--bg);padding:48px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(74,122,155,0.1);}
+.ft-logo{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--white);}
+.ft-logo span{color:var(--blue);}
+.ft-note{font-family:var(--mono);font-size:10px;color:#4A7A9B;letter-spacing:1.5px;}
+
+@media(max-width:768px){
+  nav{padding:14px 20px;} .nav-links{display:none;}
+  .hero{padding:100px 20px 60px;}
+  .data-section{padding:60px 20px;}
+  .hero-stats{flex-wrap:wrap;}
+  .h-stat{border:1px solid rgba(74,122,155,0.25)!important;margin-bottom:4px;}
+  .features{grid-template-columns:1fr;padding:60px 20px;}
+  .feat+.feat{border-left:1px solid rgba(74,122,155,0.15);border-top:none;}
+  .modal-body{grid-template-columns:1fr;}
+  .search-bar{flex-direction:column;}
+  footer{flex-direction:column;gap:12px;padding:32px 20px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Mars <span style="font-size:14px;color:#6A9AB8;font-family:'Share Tech Mono',monospace;font-weight:400;letter-spacing:1px;vertical-align:middle;">by 509α</span></div>
+  <div class="nav-links">
+    <a href="#data">Data Tool</a>
+    <a href="#features">About</a>
+    <a href="https://skool.com/509alpha" target="_blank">Community</a>
+    <a href="https://skool.com/509alpha" class="nav-cta" target="_blank">Join Free →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <svg class="hero-grid" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%;">
+    <g stroke="#5AABCB" stroke-width="0.5">
+      <line x1="0" y1="90" x2="1400" y2="90"/><line x1="0" y1="180" x2="1400" y2="180"/><line x1="0" y1="270" x2="1400" y2="270"/><line x1="0" y1="360" x2="1400" y2="360"/><line x1="0" y1="450" x2="1400" y2="450"/><line x1="0" y1="540" x2="1400" y2="540"/><line x1="0" y1="630" x2="1400" y2="630"/><line x1="0" y1="720" x2="1400" y2="720"/><line x1="0" y1="810" x2="1400" y2="810"/>
+      <line x1="140" y1="0" x2="140" y2="900"/><line x1="280" y1="0" x2="280" y2="900"/><line x1="420" y1="0" x2="420" y2="900"/><line x1="560" y1="0" x2="560" y2="900"/><line x1="700" y1="0" x2="700" y2="900"/><line x1="840" y1="0" x2="840" y2="900"/><line x1="980" y1="0" x2="980" y2="900"/><line x1="1120" y1="0" x2="1120" y2="900"/><line x1="1260" y1="0" x2="1260" y2="900"/>
+    </g>
+    <g stroke="#D97757" stroke-width="1.2" fill="none">
+      <line x1="16" y1="16" x2="48" y2="16"/><line x1="16" y1="16" x2="16" y2="48"/>
+      <line x1="1384" y1="16" x2="1352" y2="16"/><line x1="1384" y1="16" x2="1384" y2="48"/>
+      <line x1="16" y1="884" x2="48" y2="884"/><line x1="16" y1="884" x2="16" y2="852"/>
+    </g>
+    <g opacity="0.25">
+      <g stroke="#5AABCB" stroke-width="1" fill="none" stroke-dasharray="5,4">
+        <line x1="900" y1="200" x2="1100" y2="350"/><line x1="1100" y1="350" x2="1280" y2="240"/><line x1="1280" y1="240" x2="1340" y2="480"/><line x1="1340" y1="480" x2="1100" y2="350"/><line x1="900" y1="200" x2="1340" y2="480"/><line x1="1100" y1="560" x2="1100" y2="350"/>
+      </g>
+      <g fill="none" stroke="#FFFFFF" stroke-width="1.2">
+        <circle cx="1100" cy="350" r="12"/><circle cx="1100" cy="350" r="5" fill="#5AABCB" stroke="none"/>
+        <circle cx="900" cy="200" r="7"/><circle cx="900" cy="200" r="3.5" fill="#D97757" stroke="none"/>
+        <circle cx="1280" cy="240" r="7"/><circle cx="1280" cy="240" r="3.5" fill="#5AABCB" stroke="none"/>
+        <circle cx="1340" cy="480" r="7"/><circle cx="1340" cy="480" r="3.5" fill="#5AABCB" stroke="none"/>
+        <circle cx="1100" cy="560" r="6"/><circle cx="1100" cy="560" r="3" fill="#D97757" stroke="none"/>
+      </g>
+      <g font-family="'Share Tech Mono',monospace" font-size="9" fill="#2A4A6A" letter-spacing="1">
+        <text x="1100" y="336" text-anchor="middle">MARS HUB</text>
+        <text x="900" y="190" text-anchor="middle">DATA</text>
+        <text x="1280" y="230" text-anchor="middle">COURSES</text>
+        <text x="1340" y="498" text-anchor="middle">JOBS</text>
+        <text x="1100" y="580" text-anchor="middle">NETWORK</text>
+      </g>
+    </g>
+  </svg>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Mars · ABA 509 Data · 2011–2025</div>
+    <h1 class="hero-h1">Mars.<br><em>Law school data,</em><br>mapped.</h1>
+    <p class="hero-sub">15 years of admissions, tuition, bar passage, scholarships, and employment data for <strong>every ABA-accredited law school</strong> — organized, searchable, and free. Built by <strong>509α</strong>.</p>
+    <div class="hero-actions">
+      <a href="#data" class="btn-primary">Search Schools →</a>
+      <a href="https://skool.com/509alpha" class="btn-outline" target="_blank">Join the Community</a>
+    </div>
+    <div class="hero-stats">
+      <div class="h-stat"><span class="h-stat-n">194</span><span class="h-stat-l">Schools</span></div>
+      <div class="h-stat"><span class="h-stat-n">15</span><span class="h-stat-l">Years</span></div>
+      <div class="h-stat"><span class="h-stat-n">519K</span><span class="h-stat-l">Data Points</span></div>
+      <div class="h-stat"><span class="h-stat-n">Free</span><span class="h-stat-l">Always</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- DATA TOOL -->
+<section class="data-section" id="data">
+  <div class="section-header">
+    <div class="section-eyebrow">// ABA 509 Required Disclosures · 2025</div>
+    <div class="section-title">Search every law school</div>
+    <div class="section-sub">Click any school to see the full profile. Sort any column. All data from ABA Standard 509 disclosures.</div>
+  </div>
+  <div class="search-bar">
+    <input class="search-input" id="search" type="text" placeholder="Search school name..." oninput="render()">
+    <select class="filter" id="sortSel" onchange="render()">
+      <option value="lsat50">Sort: LSAT Median</option>
+      <option value="bar">Sort: Bar Passage</option>
+      <option value="ftlt">Sort: Employment Rate</option>
+      <option value="acc">Sort: Acceptance Rate</option>
+      <option value="tui">Sort: Tuition (low)</option>
+      <option value="cond">Sort: Scholarship Elimination</option>
+      <option value="name">Sort: Name A–Z</option>
+    </select>
+    <select class="filter" id="barFilter" onchange="render()">
+      <option value="all">All bar passage rates</option>
+      <option value="high">Bar pass ≥ 90%</option>
+      <option value="mid">Bar pass 75–89%</option>
+      <option value="low">Bar pass &lt; 75%</option>
+    </select>
+  </div>
+  <div class="result-count" id="resultCount"></div>
+  <div class="tbl-wrap">
+    <table id="schoolTable">
+      <thead>
+        <tr>
+          <th onclick="setSort('name')">School</th>
+          <th onclick="setSort('lsat50')">LSAT 50th</th>
+          <th onclick="setSort('lsat25')">LSAT Range</th>
+          <th onclick="setSort('gpa50')">GPA 50th</th>
+          <th onclick="setSort('acc')">Accept %</th>
+          <th onclick="setSort('tui')">Tuition</th>
+          <th onclick="setSort('bar')">Bar Pass</th>
+          <th onclick="setSort('ftlt')">FTLT Emp.</th>
+          <th onclick="setSort('cond')">Cond. Elim</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="features">
+    <div class="feat">
+      <div class="feat-icon">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="2" y="2" width="32" height="32" rx="2" stroke="#D97757" stroke-width="1.5"/><line x1="2" y1="11" x2="34" y2="11" stroke="#D97757" stroke-width="1"/><rect x="7" y="16" width="6" height="12" fill="none" stroke="#D97757" stroke-width="1"/><rect x="16" y="19" width="6" height="9" fill="none" stroke="#D97757" stroke-width="1"/><rect x="25" y="14" width="4" height="14" fill="none" stroke="#D97757" stroke-width="1"/></svg>
+      </div>
+      <div class="feat-title">15 years of real data</div>
+      <div class="feat-desc">Parsed from 9,671 pages of ABA Standard 509 required disclosure reports. Every number is sourced directly — no estimates, no projections.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="15" stroke="#5AABCB" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#5AABCB"/><g stroke="#5AABCB" stroke-width="1" fill="none" stroke-dasharray="2,2"><circle cx="18" cy="18" r="9"/></g><line x1="18" y1="3" x2="18" y2="8" stroke="#5AABCB" stroke-width="1.5"/><line x1="18" y1="28" x2="18" y2="33" stroke="#5AABCB" stroke-width="1.5"/><line x1="3" y1="18" x2="8" y2="18" stroke="#5AABCB" stroke-width="1.5"/><line x1="28" y1="18" x2="33" y2="18" stroke="#5AABCB" stroke-width="1.5"/></svg>
+      </div>
+      <div class="feat-title">The metrics that matter</div>
+      <div class="feat-desc">Conditional scholarship elimination rates. Bar passage trends. FTLT employment by sector. The numbers schools don't put in their brochures — but are required to publish.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="2" y="2" width="32" height="32" rx="2" stroke="#D97757" stroke-width="1.5"/><line x1="10" y1="13" x2="26" y2="13" stroke="#D97757" stroke-width="1.5"/><line x1="10" y1="19" x2="22" y2="19" stroke="#D97757" stroke-width="1.5"/><line x1="10" y1="25" x2="18" y2="25" stroke="#D97757" stroke-width="1.5"/></svg>
+      </div>
+      <div class="feat-title">Free. Always.</div>
+      <div class="feat-desc">The data is public — the ABA requires every school to publish it. We organized it. No paywall, no subscription required to search. The full dataset is free in the 509α community.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-sec">
+  <h2 class="cta-h2">Mars is built<br>on <em>509α data.</em></h2>
+  <p class="cta-sub">Mars is the data tool. 509α is the community — courses, connections, and the people who can help you make the right call.</p>
+  <a href="https://skool.com/509alpha" class="btn-primary" target="_blank">Join the Community — Free →</a>
+  <div class="cta-note">// SKOOL.COM/509ALPHA · FREE TO JOIN · NO CREDIT CARD</div>
+</section>
+
+<footer>
+  <div class="ft-logo">Mars <span style="font-size:11px;color:#6A9AB8;font-family:'Share Tech Mono',monospace;font-weight:400;letter-spacing:1px;">by 509α</span></div>
+  <div class="ft-note">ABA 509 REQUIRED DISCLOSURES · 2011–2025 · FREE DATA FOR EVERYONE</div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script>
+// Inject school data
+const SCHOOLS_PLACEHOLDER = 'INJECT_DATA_HERE';
+const SCHOOLS = [{"id": "washington-university-(st-louis)", "name": "Washington University (St. Louis)", "full": "Washington University (St. Louis)", "lsat25": 165, "lsat50": 175, "lsat75": 176, "gpa25": 3.58, "gpa50": 3.96, "gpa75": 4.0, "acc": 19.0, "tui": 72792, "nrt": 72792, "bar": 93.6, "ftlt": 98.6, "cond": null, "enr": 787}, {"id": "chicago-the-university-of", "name": "Chicago University of", "full": "Chicago, The University of", "lsat25": 171, "lsat50": 174, "lsat75": 176, "gpa25": 3.87, "gpa50": 3.97, "gpa75": 4.0, "acc": 52.6, "tui": 56005, "nrt": 56005, "bar": 97.4, "ftlt": 98.5, "cond": null, "enr": 1015}, {"id": "harvard-university", "name": "Harvard University", "full": "Harvard University", "lsat25": 171, "lsat50": 174, "lsat75": 176, "gpa25": 3.89, "gpa50": 3.96, "gpa75": 4.0, "acc": 9.2, "tui": 77100, "nrt": 77100, "bar": 97.9, "ftlt": 96.1, "cond": null, "enr": 1784}, {"id": "yale-university", "name": "Yale University", "full": "Yale University", "lsat25": 171, "lsat50": 174, "lsat75": 177, "gpa25": 3.9, "gpa50": 3.96, "gpa75": 4.0, "acc": 4.1, "tui": 76636, "nrt": 76636, "bar": 96.5, "ftlt": 93.0, "cond": null, "enr": 626}, {"id": "columbia-university", "name": "Columbia University", "full": "Columbia University", "lsat25": 169, "lsat50": 173, "lsat75": 175, "gpa25": 3.85, "gpa50": 3.92, "gpa75": 3.98, "acc": 11.8, "tui": 85368, "nrt": 85368, "bar": 95.9, "ftlt": 97.9, "cond": null, "enr": 1377}, {"id": "cornell-university", "name": "Cornell University", "full": "Cornell University", "lsat25": 168, "lsat50": 173, "lsat75": 175, "gpa25": 3.75, "gpa50": 3.92, "gpa75": 3.97, "acc": 18.2, "tui": 84722, "nrt": 84722, "bar": 96.4, "ftlt": 98.0, "cond": null, "enr": 611}, {"id": "northwestern-university", "name": "Northwestern University", "full": "Northwestern University", "lsat25": 167, "lsat50": 173, "lsat75": 175, "gpa25": 3.76, "gpa50": 3.96, "gpa75": 4.0, "acc": 12.3, "tui": 79772, "nrt": 79722, "bar": 91.8, "ftlt": 97.8, "cond": null, "enr": 776}, {"id": "pennsylvania-university-of", "name": "Pennsylvania", "full": "Pennsylvania, University of", "lsat25": 167, "lsat50": 173, "lsat75": 174, "gpa25": 3.77, "gpa50": 3.95, "gpa75": 4.0, "acc": 8.1, "tui": 78348, "nrt": 78348, "bar": 96.7, "ftlt": 99.7, "cond": null, "enr": 764}, {"id": "stanford-university", "name": "Stanford University", "full": "Stanford University", "lsat25": 171, "lsat50": 173, "lsat75": 176, "gpa25": 3.87, "gpa50": 3.96, "gpa75": 4.0, "acc": 6.1, "tui": 77454, "nrt": 77454, "bar": 96.5, "ftlt": 95.5, "cond": null, "enr": 570}, {"id": "virginia-university-of", "name": "Virginia", "full": "Virginia, University of", "lsat25": 168, "lsat50": 173, "lsat75": 175, "gpa25": 3.83, "gpa50": 3.99, "gpa75": 4.04, "acc": 10.2, "tui": 74078, "nrt": 76396, "bar": 95.0, "ftlt": 98.7, "cond": null, "enr": 919}, {"id": "texas-university-of", "name": "Texas", "full": "Texas, University of", "lsat25": 166, "lsat50": 172, "lsat75": 173, "gpa25": 3.75, "gpa50": 3.89, "gpa75": 3.96, "acc": 14.0, "tui": 38236, "nrt": 56822, "bar": 95.9, "ftlt": 96.8, "cond": null, "enr": 928}, {"id": "california-los-angeles-university-of", "name": "California-Los Angeles", "full": "California-Los Angeles, University of", "lsat25": 166, "lsat50": 171, "lsat75": 172, "gpa25": 3.73, "gpa50": 3.95, "gpa75": 4.0, "acc": 12.0, "tui": 59084, "nrt": 71329, "bar": 94.2, "ftlt": 96.8, "cond": null, "enr": 1020}, {"id": "duke-university", "name": "Duke University", "full": "Duke University", "lsat25": 169, "lsat50": 171, "lsat75": 172, "gpa25": 3.83, "gpa50": 3.91, "gpa75": 3.96, "acc": 12.9, "tui": 80100, "nrt": 80100, "bar": 97.5, "ftlt": 98.9, "cond": null, "enr": 723}, {"id": "georgetown-university", "name": "Georgetown University", "full": "Georgetown University", "lsat25": 166, "lsat50": 171, "lsat75": 173, "gpa25": 3.75, "gpa50": 3.93, "gpa75": 3.98, "acc": 15.8, "tui": 83576, "nrt": 83576, "bar": 93.0, "ftlt": 95.9, "cond": null, "enr": 2266}, {"id": "michigan-university-of", "name": "Michigan", "full": "Michigan, University of", "lsat25": 168, "lsat50": 171, "lsat75": 173, "gpa25": 3.74, "gpa50": 3.88, "gpa75": 3.95, "acc": 8.6, "tui": 76108, "nrt": 79108, "bar": 95.6, "ftlt": 96.6, "cond": null, "enr": 991}, {"id": "minnesota-university-of", "name": "Minnesota", "full": "Minnesota, University of", "lsat25": 166, "lsat50": 171, "lsat75": 173, "gpa25": 3.62, "gpa50": 3.88, "gpa75": 3.95, "acc": 26.7, "tui": 51440, "nrt": 61845, "bar": 94.1, "ftlt": 94.3, "cond": null, "enr": 655}, {"id": "brigham-young-university", "name": "Brigham Young University", "full": "Brigham Young University", "lsat25": 168, "lsat50": 170, "lsat75": 172, "gpa25": 3.82, "gpa50": 3.95, "gpa75": 3.98, "acc": 22.8, "tui": 15992, "nrt": 31984, "bar": 90.4, "ftlt": 90.8, "cond": null, "enr": 348}, {"id": "california-berkeley-university-of", "name": "California-Berkeley", "full": "California-Berkeley, University of", "lsat25": 167, "lsat50": 170, "lsat75": 172, "gpa25": 3.84, "gpa50": 3.92, "gpa75": 3.99, "acc": 14.8, "tui": 62532, "nrt": 76149, "bar": 91.2, "ftlt": 97.8, "cond": null, "enr": 1128}, {"id": "notre-dame-university-of", "name": "Notre Dame", "full": "Notre Dame, University of", "lsat25": 166, "lsat50": 170, "lsat75": 171, "gpa25": 3.78, "gpa50": 3.89, "gpa75": 3.95, "acc": 16.1, "tui": 73430, "nrt": 73430, "bar": 92.2, "ftlt": 96.3, "cond": null, "enr": 572}, {"id": "vanderbilt-university", "name": "Vanderbilt University", "full": "Vanderbilt University", "lsat25": 167, "lsat50": 170, "lsat75": 171, "gpa25": 3.77, "gpa50": 3.91, "gpa75": 3.97, "acc": 13.3, "tui": 76440, "nrt": 76440, "bar": 94.5, "ftlt": 98.2, "cond": null, "enr": 525}, {"id": "california-irvine-university-of", "name": "California-Irvine", "full": "California-Irvine, University of", "lsat25": 166, "lsat50": 169, "lsat75": 170, "gpa25": 3.59, "gpa50": 3.8, "gpa75": 3.9, "acc": 14.9, "tui": 59080, "nrt": 71325, "bar": 85.5, "ftlt": 92.7, "cond": null, "enr": 493}, {"id": "florida-university-of", "name": "Florida", "full": "Florida, University of", "lsat25": 165, "lsat50": 169, "lsat75": 170, "gpa25": 3.7, "gpa50": 3.91, "gpa75": 3.97, "acc": 16.5, "tui": 19139, "nrt": 36148, "bar": 88.5, "ftlt": 94.7, "cond": 22.8, "enr": 658}, {"id": "george-mason-university", "name": "George Mason University", "full": "George Mason University", "lsat25": 162, "lsat50": 169, "lsat75": 171, "gpa25": 3.55, "gpa50": 3.93, "gpa75": 3.98, "acc": 15.9, "tui": 24864, "nrt": 40978, "bar": 86.0, "ftlt": 94.9, "cond": null, "enr": 438}, {"id": "georgia-university-of", "name": "Georgia", "full": "Georgia, University of", "lsat25": 159, "lsat50": 169, "lsat75": 171, "gpa25": 3.7, "gpa50": 3.92, "gpa75": 3.97, "acc": 12.7, "tui": 18044, "nrt": 38944, "bar": 90.4, "ftlt": 93.1, "cond": null, "enr": 542}, {"id": "southern-california-university-of", "name": "Southern California", "full": "Southern California, University of", "lsat25": 165, "lsat50": 169, "lsat75": 170, "gpa25": 3.73, "gpa50": 3.91, "gpa75": 3.97, "acc": 11.2, "tui": 84034, "nrt": 84034, "bar": 94.0, "ftlt": 94.6, "cond": null, "enr": 650}, {"id": "texas-a&m-university", "name": "Texas A&M University", "full": "Texas A&M University", "lsat25": 161, "lsat50": 169, "lsat75": 170, "gpa25": 3.67, "gpa50": 4.0, "gpa75": 4.0, "acc": 12.1, "tui": 32634, "nrt": 48522, "bar": 96.0, "ftlt": 100.0, "cond": null, "enr": 396}, {"id": "boston-college", "name": "Boston College", "full": "Boston College", "lsat25": 162, "lsat50": 168, "lsat75": 169, "gpa25": 3.67, "gpa50": 3.83, "gpa75": 3.9, "acc": 8.5, "tui": 72380, "nrt": 72380, "bar": 93.8, "ftlt": 96.5, "cond": null, "enr": 638}, {"id": "boston-university", "name": "Boston University", "full": "Boston University", "lsat25": 162, "lsat50": 168, "lsat75": 169, "gpa25": 3.67, "gpa50": 3.83, "gpa75": 3.9, "acc": 8.5, "tui": 72380, "nrt": 72380, "bar": 92.3, "ftlt": 96.0, "cond": null, "enr": 638}, {"id": "fordham-university", "name": "Fordham University", "full": "Fordham University", "lsat25": 165, "lsat50": 168, "lsat75": 170, "gpa25": 3.6, "gpa50": 3.79, "gpa75": 3.88, "acc": 16.2, "tui": 78078, "nrt": 78078, "bar": 93.0, "ftlt": 94.3, "cond": null, "enr": 1352}, {"id": "george-washington-university-the", "name": "George Washington University", "full": "George Washington University, The", "lsat25": 162, "lsat50": 168, "lsat75": 170, "gpa25": 3.55, "gpa50": 3.86, "gpa75": 3.93, "acc": 27.2, "tui": 75420, "nrt": 75420, "bar": 90.2, "ftlt": 97.1, "cond": null, "enr": 1728}, {"id": "north-carolina-university-of", "name": "North Carolina", "full": "North Carolina, University of", "lsat25": 165, "lsat50": 168, "lsat75": 169, "gpa25": 3.78, "gpa50": 3.89, "gpa75": 3.97, "acc": 11.2, "tui": 28082, "nrt": 51320, "bar": 92.3, "ftlt": 97.1, "cond": null, "enr": 543}, {"id": "the-ohio-state-university", "name": "The Ohio State University", "full": "The Ohio State University", "lsat25": 163, "lsat50": 168, "lsat75": 169, "gpa25": 3.64, "gpa50": 3.91, "gpa75": 3.97, "acc": 24.6, "tui": 35650, "nrt": 50902, "bar": 92.0, "ftlt": 93.9, "cond": null, "enr": 486}, {"id": "alabama-the-university-of", "name": "Alabama University of", "full": "Alabama, The University of", "lsat25": 161, "lsat50": 167, "lsat75": 168, "gpa25": 3.76, "gpa50": 3.97, "gpa75": 4.05, "acc": 25.6, "tui": 24980, "nrt": 48100, "bar": 91.4, "ftlt": 91.6, "cond": null, "enr": 388}, {"id": "southern-methodist-university", "name": "Southern Methodist University", "full": "Southern Methodist University", "lsat25": 163, "lsat50": 167, "lsat75": 168, "gpa25": 3.52, "gpa50": 3.81, "gpa75": 3.92, "acc": 24.6, "tui": 60844, "nrt": 60844, "bar": 90.2, "ftlt": 97.2, "cond": 16.7, "enr": 672}, {"id": "washington-and-lee-university", "name": "Washington and Lee University", "full": "Washington and Lee University", "lsat25": 161, "lsat50": 167, "lsat75": 168, "gpa25": 3.51, "gpa50": 3.75, "gpa75": 3.85, "acc": 22.7, "tui": 57450, "nrt": 57450, "bar": 89.4, "ftlt": 95.0, "cond": null, "enr": 369}, {"id": "wisconsin-university-of", "name": "Wisconsin", "full": "Wisconsin, University of", "lsat25": 161, "lsat50": 167, "lsat75": 169, "gpa25": 3.61, "gpa50": 3.81, "gpa75": 3.93, "acc": 19.1, "tui": 36526, "nrt": 53640, "bar": 80.0, "ftlt": 97.0, "cond": null, "enr": 642}, {"id": "emory-university", "name": "Emory University", "full": "Emory University", "lsat25": 162, "lsat50": 166, "lsat75": 168, "gpa25": 3.68, "gpa50": 3.82, "gpa75": 3.87, "acc": 30.1, "tui": 69510, "nrt": 69510, "bar": 88.4, "ftlt": 91.0, "cond": null, "enr": 913}, {"id": "florida-state-university", "name": "Florida State University", "full": "Florida State University", "lsat25": 158, "lsat50": 166, "lsat75": 167, "gpa25": 3.6, "gpa50": 3.93, "gpa75": 3.99, "acc": 16.0, "tui": 16331, "nrt": 9036, "bar": 87.2, "ftlt": 91.1, "cond": null, "enr": 455}, {"id": "illinois-university-of", "name": "Illinois", "full": "Illinois, University of", "lsat25": 160, "lsat50": 166, "lsat75": 168, "gpa25": 3.55, "gpa50": 3.81, "gpa75": 3.92, "acc": 32.9, "tui": 36500, "nrt": 46500, "bar": 93.6, "ftlt": 98.0, "cond": null, "enr": 500}, {"id": "utah-the-university-of", "name": "Utah University of", "full": "Utah, The University of", "lsat25": 162, "lsat50": 166, "lsat75": 168, "gpa25": 3.62, "gpa50": 3.87, "gpa75": 3.94, "acc": 25.3, "tui": 34721, "nrt": 45382, "bar": 94.7, "ftlt": 91.6, "cond": null, "enr": 313}, {"id": "wake-forest-university", "name": "Wake Forest University", "full": "Wake Forest University", "lsat25": 163, "lsat50": 166, "lsat75": 168, "gpa25": 3.6, "gpa50": 3.79, "gpa75": 3.9, "acc": 24.6, "tui": 57920, "nrt": 57920, "bar": 88.2, "ftlt": 97.4, "cond": null, "enr": 563}, {"id": "william-&-mary", "name": "William & Mary", "full": "William & Mary", "lsat25": 161, "lsat50": 166, "lsat75": 167, "gpa25": 3.53, "gpa50": 3.82, "gpa75": 3.94, "acc": 22.0, "tui": 38734, "nrt": 62900, "bar": 83.6, "ftlt": 91.8, "cond": null, "enr": 496}, {"id": "arizona-state-university", "name": "Arizona State University", "full": "Arizona State University", "lsat25": 158, "lsat50": 165, "lsat75": 167, "gpa25": 3.58, "gpa50": 3.91, "gpa75": 3.98, "acc": 19.8, "tui": 28390, "nrt": 52099, "bar": 87.5, "ftlt": 93.5, "cond": null, "enr": 744}, {"id": "california-davis-university-of", "name": "California-Davis", "full": "California-Davis, University of", "lsat25": 160, "lsat50": 165, "lsat75": 167, "gpa25": 3.49, "gpa50": 3.7, "gpa75": 3.87, "acc": 21.1, "tui": 57460, "nrt": 69705, "bar": 88.9, "ftlt": 91.4, "cond": null, "enr": 606}, {"id": "cardozo-yeshiva-university", "name": "Cardozo, Yeshiva University", "full": "Cardozo, Yeshiva University", "lsat25": 162, "lsat50": 165, "lsat75": 167, "gpa25": 3.56, "gpa50": 3.78, "gpa75": 3.87, "acc": 29.6, "tui": 74438, "nrt": 74438, "bar": 88.5, "ftlt": 93.6, "cond": null, "enr": 946}, {"id": "temple-university", "name": "Temple University", "full": "Temple University", "lsat25": 162, "lsat50": 165, "lsat75": 168, "gpa25": 3.59, "gpa50": 3.76, "gpa75": 3.9, "acc": 24.4, "tui": 32588, "nrt": 48996, "bar": 90.3, "ftlt": 94.2, "cond": null, "enr": 685}, {"id": "washington-university-of", "name": "Washington", "full": "Washington, University of", "lsat25": 162, "lsat50": 165, "lsat75": 167, "gpa25": 3.6, "gpa50": 3.76, "gpa75": 3.86, "acc": 19.6, "tui": 45927, "nrt": 57810, "bar": 91.7, "ftlt": 88.9, "cond": null, "enr": 568}, {"id": "baylor-university", "name": "Baylor University", "full": "Baylor University", "lsat25": 159, "lsat50": 164, "lsat75": 165, "gpa25": 3.49, "gpa50": 3.77, "gpa75": 3.89, "acc": 20.6, "tui": 64544, "nrt": 64544, "bar": 94.9, "ftlt": 98.0, "cond": 2.5, "enr": 439}, {"id": "colorado-university-of", "name": "Colorado", "full": "Colorado, University of", "lsat25": 161, "lsat50": 164, "lsat75": 167, "gpa25": 3.62, "gpa50": 3.81, "gpa75": 3.91, "acc": 27.6, "tui": 35992, "nrt": 44002, "bar": 90.4, "ftlt": 91.7, "cond": null, "enr": 547}, {"id": "indiana-university-bloomington", "name": "Indiana University-Bloomington", "full": "Indiana University-Bloomington", "lsat25": 158, "lsat50": 164, "lsat75": 166, "gpa25": 3.63, "gpa50": 3.91, "gpa75": 3.98, "acc": 35.8, "tui": 36950, "nrt": 58000, "bar": 87.4, "ftlt": 93.9, "cond": null, "enr": 502}, {"id": "iowa-university-of", "name": "Iowa", "full": "Iowa, University of", "lsat25": 161, "lsat50": 164, "lsat75": 165, "gpa25": 3.62, "gpa50": 3.78, "gpa75": 3.92, "acc": 44.4, "tui": 30944, "nrt": 52191, "bar": 91.0, "ftlt": 93.8, "cond": null, "enr": 500}, {"id": "maryland-university-of", "name": "Maryland", "full": "Maryland, University of", "lsat25": 156, "lsat50": 164, "lsat75": 166, "gpa25": 3.37, "gpa50": 3.72, "gpa75": 3.88, "acc": 26.1, "tui": 37830, "nrt": 55844, "bar": 82.1, "ftlt": 88.1, "cond": null, "enr": 650}, {"id": "miami-university-of", "name": "Miami", "full": "Miami, University of", "lsat25": 160, "lsat50": 164, "lsat75": 165, "gpa25": 3.58, "gpa50": 3.79, "gpa75": 3.88, "acc": 24.6, "tui": 66720, "nrt": 66720, "bar": 81.3, "ftlt": 89.9, "cond": null, "enr": 993}, {"id": "northeastern-university", "name": "Northeastern University", "full": "Northeastern University", "lsat25": 161, "lsat50": 164, "lsat75": 166, "gpa25": 3.61, "gpa50": 3.77, "gpa75": 3.86, "acc": 24.2, "tui": 65652, "nrt": 65652, "bar": 87.4, "ftlt": 91.6, "cond": null, "enr": 786}, {"id": "pepperdine-university", "name": "Pepperdine University", "full": "Pepperdine University", "lsat25": 161, "lsat50": 164, "lsat75": 167, "gpa25": 3.61, "gpa50": 3.85, "gpa75": 3.94, "acc": 23.4, "tui": 72920, "nrt": 72920, "bar": 86.8, "ftlt": 97.0, "cond": 20.0, "enr": 553}, {"id": "richmond-university-of", "name": "Richmond", "full": "Richmond, University of", "lsat25": 159, "lsat50": 164, "lsat75": 167, "gpa25": 3.66, "gpa50": 3.81, "gpa75": 3.92, "acc": 39.6, "tui": 57700, "nrt": 57700, "bar": 80.1, "ftlt": 93.4, "cond": null, "enr": 413}, {"id": "st-john's-university", "name": "St. John's University", "full": "St. John's University", "lsat25": 156, "lsat50": 164, "lsat75": 166, "gpa25": 3.44, "gpa50": 3.81, "gpa75": 3.91, "acc": 23.1, "tui": 75170, "nrt": 75170, "bar": 87.7, "ftlt": 92.5, "cond": null, "enr": 758}, {"id": "tennessee-university-of", "name": "Tennessee", "full": "Tennessee, University of", "lsat25": 160, "lsat50": 164, "lsat75": 166, "gpa25": 3.67, "gpa50": 3.89, "gpa75": 3.95, "acc": 24.8, "tui": 16696, "nrt": 35140, "bar": 91.9, "ftlt": 91.3, "cond": null, "enr": 419}, {"id": "villanova-university", "name": "Villanova University", "full": "Villanova University", "lsat25": 159, "lsat50": 164, "lsat75": 166, "gpa25": 3.64, "gpa50": 3.8, "gpa75": 3.9, "acc": 25.9, "tui": 59800, "nrt": 59800, "bar": 91.3, "ftlt": 93.0, "cond": null, "enr": 597}, {"id": "wayne-state-university", "name": "Wayne State University", "full": "Wayne State University", "lsat25": 157, "lsat50": 164, "lsat75": 166, "gpa25": 3.56, "gpa50": 3.89, "gpa75": 3.95, "acc": 24.8, "tui": 38861, "nrt": 42632, "bar": 86.1, "ftlt": 95.7, "cond": null, "enr": 394}, {"id": "arizona-the-university-of", "name": "Arizona University of", "full": "Arizona, The University of", "lsat25": 162, "lsat50": 163, "lsat75": 165, "gpa25": 3.54, "gpa50": 3.78, "gpa75": 3.9, "acc": 27.9, "tui": 26490, "nrt": 31360, "bar": 72.2, "ftlt": 89.2, "cond": null, "enr": 338}, {"id": "chapman-university", "name": "Chapman University", "full": "Chapman University", "lsat25": 156, "lsat50": 163, "lsat75": 164, "gpa25": 3.32, "gpa50": 3.7, "gpa75": 3.82, "acc": 20.5, "tui": 63126, "nrt": 63126, "bar": 74.1, "ftlt": 84.1, "cond": 34.0, "enr": 420}, {"id": "houston-university-of", "name": "Houston", "full": "Houston, University of", "lsat25": 160, "lsat50": 163, "lsat75": 165, "gpa25": 3.56, "gpa50": 3.79, "gpa75": 3.9, "acc": 23.0, "tui": 31326, "nrt": 46051, "bar": 88.6, "ftlt": 93.5, "cond": null, "enr": 838}, {"id": "loyola-marymount-university-los-angeles", "name": "Loyola Marymount University-Los Angeles", "full": "Loyola Marymount University-Los Angeles", "lsat25": 160, "lsat50": 163, "lsat75": 165, "gpa25": 3.52, "gpa50": 3.74, "gpa75": 3.89, "acc": 26.1, "tui": 70360, "nrt": 70360, "bar": 84.2, "ftlt": 94.0, "cond": 13.1, "enr": 1000}, {"id": "san-diego-university-of", "name": "San Diego", "full": "San Diego, University of", "lsat25": 160, "lsat50": 163, "lsat75": 165, "gpa25": 3.59, "gpa50": 3.84, "gpa75": 3.92, "acc": 23.5, "tui": 66950, "nrt": 66950, "bar": 84.8, "ftlt": 98.0, "cond": 13.0, "enr": 725}, {"id": "american-university", "name": "American University", "full": "American University", "lsat25": 157, "lsat50": 162, "lsat75": 163, "gpa25": 3.32, "gpa50": 3.63, "gpa75": 3.75, "acc": 33.3, "tui": 66990, "nrt": 66990, "bar": 81.3, "ftlt": 82.5, "cond": null, "enr": 1199}, {"id": "case-western-reserve-university", "name": "Case Western Reserve University", "full": "Case Western Reserve University", "lsat25": 156, "lsat50": 162, "lsat75": 164, "gpa25": 3.51, "gpa50": 3.76, "gpa75": 3.89, "acc": 34.8, "tui": 64600, "nrt": 64600, "bar": 82.0, "ftlt": 88.4, "cond": null, "enr": 531}, {"id": "connecticut-university-of", "name": "Connecticut", "full": "Connecticut, University of", "lsat25": 160, "lsat50": 162, "lsat75": 164, "gpa25": 3.55, "gpa50": 3.78, "gpa75": 3.9, "acc": 20.1, "tui": 30354, "nrt": 61396, "bar": 84.0, "ftlt": 89.3, "cond": null, "enr": 479}, {"id": "kansas-the-university-of", "name": "Kansas University of", "full": "Kansas, The University of", "lsat25": 158, "lsat50": 162, "lsat75": 164, "gpa25": 3.58, "gpa50": 3.85, "gpa75": 3.95, "acc": 39.1, "tui": 28809, "nrt": 49998, "bar": 92.2, "ftlt": 96.6, "cond": 22.6, "enr": 356}, {"id": "michigan-state-university", "name": "Michigan State University", "full": "Michigan State University", "lsat25": 158, "lsat50": 162, "lsat75": 164, "gpa25": 3.47, "gpa50": 3.73, "gpa75": 3.87, "acc": 26.0, "tui": 43480, "nrt": 48222, "bar": 78.3, "ftlt": 87.3, "cond": null, "enr": 500}, {"id": "oklahoma-university-of", "name": "Oklahoma", "full": "Oklahoma, University of", "lsat25": 159, "lsat50": 162, "lsat75": 164, "gpa25": 3.42, "gpa50": 3.73, "gpa75": 3.88, "acc": 33.4, "tui": 18379, "nrt": 33357, "bar": 88.8, "ftlt": 92.7, "cond": 0.0, "enr": 539}, {"id": "south-carolina-university-of", "name": "South Carolina", "full": "South Carolina, University of", "lsat25": 160, "lsat50": 162, "lsat75": 164, "gpa25": 3.43, "gpa50": 3.67, "gpa75": 3.86, "acc": 29.9, "tui": 20322, "nrt": 38100, "bar": 83.2, "ftlt": 91.6, "cond": null, "enr": 649}, {"id": "belmont-university", "name": "Belmont University", "full": "Belmont University", "lsat25": 158, "lsat50": 161, "lsat75": 163, "gpa25": 3.66, "gpa50": 3.84, "gpa75": 3.94, "acc": 37.6, "tui": 55500, "nrt": 55500, "bar": 95.0, "ftlt": 90.5, "cond": 20.0, "enr": 372}, {"id": "brooklyn-law-school", "name": "Brooklyn Law School", "full": "Brooklyn Law School", "lsat25": 158, "lsat50": 161, "lsat75": 163, "gpa25": 3.37, "gpa50": 3.59, "gpa75": 3.75, "acc": 44.0, "tui": 75496, "nrt": 75496, "bar": 84.5, "ftlt": 90.5, "cond": 20.5, "enr": 1126}, {"id": "california-san-francisco-university-of", "name": "California-San Francisco", "full": "California-San Francisco, University of", "lsat25": 158, "lsat50": 161, "lsat75": 163, "gpa25": 3.55, "gpa50": 3.71, "gpa75": 3.83, "acc": 42.4, "tui": 59800, "nrt": 59800, "bar": 83.8, "ftlt": 86.3, "cond": 23.6, "enr": 510}, {"id": "catholic-university-of-america-the", "name": "CatholicAmerica", "full": "Catholic University of America, The", "lsat25": 158, "lsat50": 161, "lsat75": 163, "gpa25": 3.46, "gpa50": 3.68, "gpa75": 3.85, "acc": 32.4, "tui": 61580, "nrt": 61580, "bar": 83.1, "ftlt": 93.7, "cond": 14.3, "enr": 432}, {"id": "chicago-kent-illinois-institute-of-techn", "name": "Chicago-Kent, Illinois Institute of Technology", "full": "Chicago-Kent, Illinois Institute of Technology", "lsat25": 156, "lsat50": 161, "lsat75": 164, "gpa25": 3.45, "gpa50": 3.72, "gpa75": 3.89, "acc": 38.6, "tui": 79539, "nrt": 79539, "bar": 79.0, "ftlt": 87.2, "cond": null, "enr": 720}, {"id": "florida-international-university", "name": "Florida International University", "full": "Florida International University", "lsat25": 159, "lsat50": 161, "lsat75": 162, "gpa25": 3.66, "gpa50": 3.8, "gpa75": 3.89, "acc": 18.8, "tui": 25006, "nrt": 39250, "bar": 88.3, "ftlt": 91.9, "cond": 22.8, "enr": 581}, {"id": "lewis-&-clark-law-school", "name": "Lewis & Clark Law School", "full": "Lewis & Clark Law School", "lsat25": 158, "lsat50": 161, "lsat75": 166, "gpa25": 3.24, "gpa50": 3.59, "gpa75": 3.79, "acc": 54.7, "tui": 61434, "nrt": 61434, "bar": 85.0, "ftlt": 81.4, "cond": null, "enr": 519}, {"id": "loyola-university-chicago", "name": "Loyola University-Chicago", "full": "Loyola University-Chicago", "lsat25": 159, "lsat50": 161, "lsat75": 163, "gpa25": 3.55, "gpa50": 3.7, "gpa75": 3.83, "acc": 28.2, "tui": 58670, "nrt": 58670, "bar": 80.0, "ftlt": 92.9, "cond": null, "enr": 848}, {"id": "missouri-university-of", "name": "Missouri", "full": "Missouri, University of", "lsat25": 156, "lsat50": 161, "lsat75": 162, "gpa25": 3.47, "gpa50": 3.72, "gpa75": 3.91, "acc": 42.0, "tui": 17140, "nrt": 37432, "bar": 83.3, "ftlt": 95.5, "cond": 25.0, "enr": 373}, {"id": "seton-hall-university", "name": "Seton Hall University", "full": "Seton Hall University", "lsat25": 158, "lsat50": 161, "lsat75": 164, "gpa25": 3.51, "gpa50": 3.71, "gpa75": 3.86, "acc": 34.3, "tui": 69660, "nrt": 69660, "bar": 87.2, "ftlt": 92.4, "cond": 24.0, "enr": 822}, {"id": "tulane-university", "name": "Tulane University", "full": "Tulane University", "lsat25": 159, "lsat50": 161, "lsat75": 164, "gpa25": 3.47, "gpa50": 3.67, "gpa75": 3.81, "acc": 40.0, "tui": 69578, "nrt": 69578, "bar": 77.7, "ftlt": 88.1, "cond": null, "enr": 628}, {"id": "denver-university-of", "name": "Denver", "full": "Denver, University of", "lsat25": 156, "lsat50": 160, "lsat75": 162, "gpa25": 3.36, "gpa50": 3.66, "gpa75": 3.8, "acc": 41.3, "tui": 63390, "nrt": 63390, "bar": 84.9, "ftlt": 84.1, "cond": 0.0, "enr": 851}, {"id": "drexel-university", "name": "Drexel University", "full": "Drexel University", "lsat25": 154, "lsat50": 160, "lsat75": 162, "gpa25": 3.35, "gpa50": 3.76, "gpa75": 3.87, "acc": 29.6, "tui": 57000, "nrt": 57000, "bar": 85.0, "ftlt": 91.2, "cond": 22.6, "enr": 461}, {"id": "georgia-state-university", "name": "Georgia State University", "full": "Georgia State University", "lsat25": 158, "lsat50": 160, "lsat75": 163, "gpa25": 3.45, "gpa50": 3.64, "gpa75": 3.82, "acc": 30.6, "tui": 16162, "nrt": 37886, "bar": 90.0, "ftlt": 91.9, "cond": null, "enr": 682}, {"id": "nebraska-university-of", "name": "Nebraska", "full": "Nebraska, University of", "lsat25": 156, "lsat50": 160, "lsat75": 162, "gpa25": 3.6, "gpa50": 3.81, "gpa75": 3.98, "acc": 40.2, "tui": 16611, "nrt": 41062, "bar": 90.5, "ftlt": 94.8, "cond": null, "enr": 447}, {"id": "nevada-las-vegas-university-of", "name": "Nevada-Las Vegas", "full": "Nevada-Las Vegas, University of", "lsat25": 156, "lsat50": 160, "lsat75": 162, "gpa25": 3.39, "gpa50": 3.76, "gpa75": 3.88, "acc": 30.8, "tui": 31518, "nrt": 46040, "bar": 77.2, "ftlt": 92.2, "cond": null, "enr": 457}, {"id": "oregon-university-of", "name": "Oregon", "full": "Oregon, University of", "lsat25": 157, "lsat50": 160, "lsat75": 162, "gpa25": 3.32, "gpa50": 3.62, "gpa75": 3.79, "acc": 55.0, "tui": 47240, "nrt": 59495, "bar": 85.1, "ftlt": 88.4, "cond": null, "enr": 481}, {"id": "pittsburgh-university-of", "name": "Pittsburgh", "full": "Pittsburgh, University of", "lsat25": 158, "lsat50": 160, "lsat75": 163, "gpa25": 3.26, "gpa50": 3.54, "gpa75": 3.74, "acc": 34.9, "tui": 39936, "nrt": 53434, "bar": 86.3, "ftlt": 89.0, "cond": null, "enr": 389}, {"id": "cincinnati-university-of", "name": "Cincinnati", "full": "Cincinnati, University of", "lsat25": 156, "lsat50": 159, "lsat75": 161, "gpa25": 3.64, "gpa50": 3.8, "gpa75": 3.91, "acc": 32.7, "tui": 24010, "nrt": 29010, "bar": 85.6, "ftlt": 86.9, "cond": null, "enr": 398}, {"id": "kentucky-university-of", "name": "Kentucky", "full": "Kentucky, University of", "lsat25": 156, "lsat50": 159, "lsat75": 162, "gpa25": 3.52, "gpa50": 3.72, "gpa75": 3.9, "acc": 40.8, "tui": 25685, "nrt": 49836, "bar": 83.1, "ftlt": 97.1, "cond": null, "enr": 419}, {"id": "penn-state-dickinson-law", "name": "Penn State Dickinson Law", "full": "Penn State Dickinson Law", "lsat25": 157, "lsat50": 159, "lsat75": 161, "gpa25": 3.5, "gpa50": 3.71, "gpa75": 3.86, "acc": 43.0, "tui": 60048, "nrt": 60048, "bar": 87.0, "ftlt": 93.9, "cond": null, "enr": 665}, {"id": "santa-clara-university", "name": "Santa Clara University", "full": "Santa Clara University", "lsat25": 157, "lsat50": 159, "lsat75": 162, "gpa25": 3.21, "gpa50": 3.5, "gpa75": 3.74, "acc": 52.6, "tui": 66240, "nrt": 66240, "bar": 74.8, "ftlt": 79.2, "cond": 43.2, "enr": 746}, {"id": "seattle-university", "name": "Seattle University", "full": "Seattle University", "lsat25": 155, "lsat50": 159, "lsat75": 162, "gpa25": 3.22, "gpa50": 3.6, "gpa75": 3.8, "acc": 38.9, "tui": 57038, "nrt": 55598, "bar": 78.7, "ftlt": 85.4, "cond": 16.7, "enr": 646}, {"id": "st-thomas-(minneapolis)-university-of", "name": "St. Thomas, (Minneapolis) University of", "full": "St. Thomas, (Minneapolis) University of", "lsat25": 155, "lsat50": 159, "lsat75": 162, "gpa25": 3.46, "gpa50": 3.72, "gpa75": 3.88, "acc": 57.6, "tui": 50998, "nrt": 50998, "bar": 74.7, "ftlt": 90.6, "cond": null, "enr": 998}, {"id": "stetson-university", "name": "Stetson University", "full": "Stetson University", "lsat25": 157, "lsat50": 159, "lsat75": 162, "gpa25": 3.42, "gpa50": 3.63, "gpa75": 3.81, "acc": 36.4, "tui": 56521, "nrt": 56521, "bar": 77.0, "ftlt": 89.8, "cond": null, "enr": 1009}, {"id": "texas-tech-university", "name": "Texas Tech University", "full": "Texas Tech University", "lsat25": 157, "lsat50": 159, "lsat75": 160, "gpa25": 3.41, "gpa50": 3.69, "gpa75": 3.85, "acc": 25.6, "tui": 22590, "nrt": 33840, "bar": 86.3, "ftlt": 91.7, "cond": null, "enr": 459}, {"id": "albany-law-school", "name": "Albany Law School", "full": "Albany Law School", "lsat25": 154, "lsat50": 158, "lsat75": 161, "gpa25": 3.16, "gpa50": 3.54, "gpa75": 3.75, "acc": 37.5, "tui": 63994, "nrt": 63994, "bar": 74.3, "ftlt": 92.2, "cond": null, "enr": 615}, {"id": "arkansas-university-of", "name": "Arkansas", "full": "Arkansas, University of", "lsat25": 155, "lsat50": 158, "lsat75": 161, "gpa25": 3.54, "gpa50": 3.71, "gpa75": 3.87, "acc": 26.6, "tui": 16238, "nrt": 39108, "bar": 80.0, "ftlt": 81.5, "cond": null, "enr": 375}, {"id": "depaul-university", "name": "DePaul University", "full": "DePaul University", "lsat25": 154, "lsat50": 158, "lsat75": 160, "gpa25": 3.17, "gpa50": 3.61, "gpa75": 3.8, "acc": 34.8, "tui": 55328, "nrt": 55328, "bar": 76.0, "ftlt": 84.4, "cond": null, "enr": 510}, {"id": "hawaii-university-of", "name": "Hawaii", "full": "Hawaii, University of", "lsat25": 155, "lsat50": 158, "lsat75": 162, "gpa25": 3.4, "gpa50": 3.62, "gpa75": 3.8, "acc": 26.2, "tui": 23304, "nrt": 46728, "bar": 76.9, "ftlt": 87.5, "cond": null, "enr": 375}, {"id": "maine-university-of", "name": "Maine", "full": "Maine, University of", "lsat25": 154, "lsat50": 158, "lsat75": 162, "gpa25": 3.41, "gpa50": 3.7, "gpa75": 3.8, "acc": 37.3, "tui": 26100, "nrt": 38160, "bar": 84.4, "ftlt": 86.6, "cond": null, "enr": 286}, {"id": "marquette-university", "name": "Marquette University", "full": "Marquette University", "lsat25": 156, "lsat50": 158, "lsat75": 160, "gpa25": 3.5, "gpa50": 3.7, "gpa75": 3.83, "acc": 22.1, "tui": 51970, "nrt": 51970, "bar": 50.0, "ftlt": 93.1, "cond": null, "enr": 614}, {"id": "regent-university", "name": "Regent University", "full": "Regent University", "lsat25": 153, "lsat50": 158, "lsat75": 161, "gpa25": 3.37, "gpa50": 3.68, "gpa75": 3.89, "acc": 44.3, "tui": 36633, "nrt": 34760, "bar": 88.2, "ftlt": 92.9, "cond": null, "enr": 341}, {"id": "rutgers-university", "name": "Rutgers University", "full": "Rutgers University", "lsat25": 155, "lsat50": 158, "lsat75": 161, "gpa25": 3.35, "gpa50": 3.66, "gpa75": 3.82, "acc": 33.5, "tui": 31577, "nrt": 47863, "bar": 72.8, "ftlt": 91.3, "cond": null, "enr": 1339}, {"id": "syracuse-university", "name": "Syracuse University", "full": "Syracuse University", "lsat25": 154, "lsat50": 158, "lsat75": 160, "gpa25": 3.18, "gpa50": 3.6, "gpa75": 3.77, "acc": 34.6, "tui": 64650, "nrt": 64650, "bar": 82.9, "ftlt": 92.6, "cond": null, "enr": 750}, {"id": "buffalo-university-at", "name": "Buffalo, University at", "full": "Buffalo, University at", "lsat25": 155, "lsat50": 157, "lsat75": 161, "gpa25": 3.51, "gpa50": 3.71, "gpa75": 3.88, "acc": 42.4, "tui": 26430, "nrt": 32100, "bar": 85.7, "ftlt": 94.4, "cond": null, "enr": 430}, {"id": "dayton-university-of", "name": "Dayton", "full": "Dayton, University of", "lsat25": 154, "lsat50": 157, "lsat75": 160, "gpa25": 3.31, "gpa50": 3.6, "gpa75": 3.87, "acc": 30.7, "tui": 33739, "nrt": 33739, "bar": 88.0, "ftlt": 90.7, "cond": null, "enr": 442}, {"id": "duquesne-university", "name": "Duquesne University", "full": "Duquesne University", "lsat25": 155, "lsat50": 157, "lsat75": 160, "gpa25": 3.35, "gpa50": 3.62, "gpa75": 3.85, "acc": 43.2, "tui": 58898, "nrt": 58898, "bar": 88.7, "ftlt": 94.3, "cond": null, "enr": 528}, {"id": "hofstra-university", "name": "Hofstra University", "full": "Hofstra University", "lsat25": 154, "lsat50": 157, "lsat75": 160, "gpa25": 3.35, "gpa50": 3.65, "gpa75": 3.83, "acc": 40.6, "tui": 73344, "nrt": 73344, "bar": 78.9, "ftlt": 92.4, "cond": 52.2, "enr": 800}, {"id": "louisiana-state-university", "name": "Louisiana State University", "full": "Louisiana State University", "lsat25": 155, "lsat50": 157, "lsat75": 160, "gpa25": 3.48, "gpa50": 3.74, "gpa75": 3.93, "acc": 38.6, "tui": 19750, "nrt": 19750, "bar": 84.9, "ftlt": 87.6, "cond": 23.4, "enr": 635}, {"id": "louisville-university-of", "name": "Louisville", "full": "Louisville, University of", "lsat25": 154, "lsat50": 157, "lsat75": 161, "gpa25": 3.32, "gpa50": 3.67, "gpa75": 3.9, "acc": 63.4, "tui": 27000, "nrt": 32000, "bar": 75.6, "ftlt": 80.2, "cond": null, "enr": 377}, {"id": "mercer-university", "name": "Mercer University", "full": "Mercer University", "lsat25": 155, "lsat50": 157, "lsat75": 160, "gpa25": 3.3, "gpa50": 3.62, "gpa75": 3.8, "acc": 37.8, "tui": 44782, "nrt": 44782, "bar": 84.0, "ftlt": 92.3, "cond": null, "enr": 425}, {"id": "mississippi-the-university-of", "name": "Mississippi University of", "full": "Mississippi, The University of", "lsat25": 155, "lsat50": 157, "lsat75": 160, "gpa25": 3.44, "gpa50": 3.68, "gpa75": 3.87, "acc": 42.0, "tui": 19797, "nrt": 26797, "bar": 73.2, "ftlt": 84.6, "cond": null, "enr": 468}, {"id": "new-mexico-the-university-of", "name": "New Mexico University of", "full": "New Mexico, The University of", "lsat25": 154, "lsat50": 157, "lsat75": 161, "gpa25": 3.12, "gpa50": 3.56, "gpa75": 3.82, "acc": 41.4, "tui": 19474, "nrt": 43192, "bar": 85.7, "ftlt": 85.7, "cond": 7.7, "enr": 296}, {"id": "new-york-law-school", "name": "New York Law School", "full": "New York Law School", "lsat25": 154, "lsat50": 157, "lsat75": 160, "gpa25": 3.41, "gpa50": 3.63, "gpa75": 3.78, "acc": 39.7, "tui": 71052, "nrt": 71052, "bar": 81.9, "ftlt": 90.4, "cond": 22.6, "enr": 1107}, {"id": "new-york-university", "name": "New York University", "full": "New York University", "lsat25": 154, "lsat50": 157, "lsat75": 160, "gpa25": 3.41, "gpa50": 3.63, "gpa75": 3.78, "acc": 13.4, "tui": 83952, "nrt": 83952, "bar": 96.7, "ftlt": 97.7, "cond": null, "enr": 1405}, {"id": "saint-louis-university", "name": "Saint Louis University", "full": "Saint Louis University", "lsat25": 154, "lsat50": 157, "lsat75": 161, "gpa25": 3.37, "gpa50": 3.61, "gpa75": 3.83, "acc": 56.4, "tui": 55260, "nrt": 55260, "bar": 84.0, "ftlt": 89.7, "cond": null, "enr": 594}, {"id": "southwestern-law-school", "name": "Southwestern Law School", "full": "Southwestern Law School", "lsat25": 154, "lsat50": 157, "lsat75": 160, "gpa25": 3.23, "gpa50": 3.51, "gpa75": 3.72, "acc": 36.5, "tui": 63160, "nrt": 63160, "bar": 64.9, "ftlt": 76.9, "cond": 51.4, "enr": 1108}, {"id": "tulsa-the-university-of", "name": "Tulsa University of", "full": "Tulsa, The University of", "lsat25": 155, "lsat50": 157, "lsat75": 160, "gpa25": 3.27, "gpa50": 3.45, "gpa75": 3.72, "acc": 56.6, "tui": 30840, "nrt": 30840, "bar": 79.0, "ftlt": 90.3, "cond": null, "enr": 282}, {"id": "campbell-university", "name": "Campbell University", "full": "Campbell University", "lsat25": 152, "lsat50": 156, "lsat75": 159, "gpa25": 3.21, "gpa50": 3.51, "gpa75": 3.77, "acc": 50.7, "tui": 51840, "nrt": 51840, "bar": 85.4, "ftlt": 81.6, "cond": null, "enr": 553}, {"id": "detroit-mercy-university-of", "name": "Detroit Mercy", "full": "Detroit Mercy, University of", "lsat25": 154, "lsat50": 156, "lsat75": 159, "gpa25": 3.16, "gpa50": 3.52, "gpa75": 3.73, "acc": 41.4, "tui": 40532, "nrt": 48752, "bar": 70.8, "ftlt": 90.5, "cond": null, "enr": 664}, {"id": "drake-university", "name": "Drake University", "full": "Drake University", "lsat25": 153, "lsat50": 156, "lsat75": 159, "gpa25": 3.38, "gpa50": 3.67, "gpa75": 3.89, "acc": 54.8, "tui": 50920, "nrt": 50920, "bar": 85.7, "ftlt": 91.0, "cond": null, "enr": 369}, {"id": "howard-university", "name": "Howard University", "full": "Howard University", "lsat25": 153, "lsat50": 156, "lsat75": 160, "gpa25": 3.4, "gpa50": 3.63, "gpa75": 3.8, "acc": 24.1, "tui": 39780, "nrt": 39780, "bar": 76.8, "ftlt": 87.8, "cond": 0.0, "enr": 555}, {"id": "missouri-kansas-city-university-of", "name": "Missouri-Kansas City", "full": "Missouri-Kansas City, University of", "lsat25": 154, "lsat50": 156, "lsat75": 159, "gpa25": 3.33, "gpa50": 3.65, "gpa75": 3.8, "acc": 45.9, "tui": 19552, "nrt": 37186, "bar": 84.1, "ftlt": 92.1, "cond": null, "enr": 405}, {"id": "montana-university-of", "name": "Montana", "full": "Montana, University of", "lsat25": 153, "lsat50": 156, "lsat75": 159, "gpa25": 3.33, "gpa50": 3.64, "gpa75": 3.8, "acc": 51.4, "tui": 24582, "nrt": 51582, "bar": 82.0, "ftlt": 94.9, "cond": 3.4, "enr": 280}, {"id": "pacific-university-of-the", "name": "Pacific the", "full": "Pacific, University of the", "lsat25": 153, "lsat50": 156, "lsat75": 160, "gpa25": 3.17, "gpa50": 3.52, "gpa75": 3.73, "acc": 54.4, "tui": 62678, "nrt": 62678, "bar": 70.5, "ftlt": 83.6, "cond": 31.3, "enr": 615}, {"id": "samford-university", "name": "Samford University", "full": "Samford University", "lsat25": 154, "lsat50": 156, "lsat75": 160, "gpa25": 3.42, "gpa50": 3.63, "gpa75": 3.84, "acc": 49.0, "tui": 46334, "nrt": 46334, "bar": 78.8, "ftlt": 86.5, "cond": 13.4, "enr": 471}, {"id": "wyoming-university-of", "name": "Wyoming", "full": "Wyoming, University of", "lsat25": 153, "lsat50": 156, "lsat75": 160, "gpa25": 3.32, "gpa50": 3.55, "gpa75": 3.8, "acc": 35.8, "tui": 18259, "nrt": 58710, "bar": 78.2, "ftlt": 86.0, "cond": 22.7, "enr": 230}, {"id": "ave-maria-school-of-law", "name": "Ave Maria", "full": "Ave Maria School of Law", "lsat25": 152, "lsat50": 155, "lsat75": 158, "gpa25": 3.07, "gpa50": 3.36, "gpa75": 3.66, "acc": 46.9, "tui": 49500, "nrt": 49500, "bar": 65.9, "ftlt": 82.4, "cond": 27.2, "enr": 334}, {"id": "baltimore-university-of", "name": "Baltimore", "full": "Baltimore, University of", "lsat25": 152, "lsat50": 155, "lsat75": 158, "gpa25": 3.12, "gpa50": 3.45, "gpa75": 3.7, "acc": 49.5, "tui": 33944, "nrt": 50624, "bar": 70.7, "ftlt": 87.4, "cond": 17.1, "enr": 726}, {"id": "california-western-school-of-law", "name": "California Western", "full": "California Western School of Law", "lsat25": 152, "lsat50": 155, "lsat75": 158, "gpa25": 3.16, "gpa50": 3.5, "gpa75": 3.66, "acc": 46.9, "tui": 64720, "nrt": 64720, "bar": 62.9, "ftlt": 76.9, "cond": 68.1, "enr": 669}, {"id": "city-university-of-new-york-university-o", "name": "CityNew York", "full": "City University of New York, University of", "lsat25": 152, "lsat50": 155, "lsat75": 161, "gpa25": 3.26, "gpa50": 3.54, "gpa75": 3.77, "acc": 28.6, "tui": 15450, "nrt": 25640, "bar": 65.7, "ftlt": 75.6, "cond": null, "enr": 695}, {"id": "cleveland-state-university", "name": "Cleveland State University", "full": "Cleveland State University", "lsat25": 152, "lsat50": 155, "lsat75": 158, "gpa25": 3.11, "gpa50": 3.5, "gpa75": 3.76, "acc": 34.4, "tui": 29766, "nrt": 29866, "bar": 75.4, "ftlt": 88.3, "cond": null, "enr": 495}, {"id": "gonzaga-university", "name": "Gonzaga University", "full": "Gonzaga University", "lsat25": 153, "lsat50": 155, "lsat75": 158, "gpa25": 3.24, "gpa50": 3.55, "gpa75": 3.76, "acc": 51.1, "tui": 57962, "nrt": 57962, "bar": 79.7, "ftlt": 77.7, "cond": null, "enr": 551}, {"id": "indiana-university-indianapolis", "name": "Indiana University-Indianapolis", "full": "Indiana University-Indianapolis", "lsat25": 152, "lsat50": 155, "lsat75": 159, "gpa25": 3.33, "gpa50": 3.58, "gpa75": 3.82, "acc": 55.9, "tui": 30432, "nrt": 50496, "bar": 73.9, "ftlt": 88.4, "cond": 73.7, "enr": 829}, {"id": "memphis-the-university-of", "name": "Memphis University of", "full": "Memphis, The University of", "lsat25": 152, "lsat50": 155, "lsat75": 159, "gpa25": 3.22, "gpa50": 3.53, "gpa75": 3.77, "acc": 41.1, "tui": 18634, "nrt": 24354, "bar": 73.4, "ftlt": 85.6, "cond": 38.2, "enr": 239}, {"id": "new-hampshire-university-of", "name": "New Hampshire", "full": "New Hampshire, University of", "lsat25": 151, "lsat50": 155, "lsat75": 159, "gpa25": 3.1, "gpa50": 3.5, "gpa75": 3.72, "acc": 52.0, "tui": 42000, "nrt": 50000, "bar": 79.5, "ftlt": 87.2, "cond": null, "enr": 685}, {"id": "nova-southeastern-university", "name": "Nova Southeastern University", "full": "Nova Southeastern University", "lsat25": 152, "lsat50": 155, "lsat75": 158, "gpa25": 3.34, "gpa50": 3.52, "gpa75": 3.71, "acc": 47.3, "tui": 49350, "nrt": 49350, "bar": 67.4, "ftlt": 73.8, "cond": null, "enr": 634}, {"id": "quinnipiac-university", "name": "Quinnipiac University", "full": "Quinnipiac University", "lsat25": 153, "lsat50": 155, "lsat75": 158, "gpa25": 3.41, "gpa50": 3.65, "gpa75": 3.84, "acc": 43.1, "tui": 56610, "nrt": 56610, "bar": 73.7, "ftlt": 91.4, "cond": 8.2, "enr": 392}, {"id": "san-francisco-university-of", "name": "San Francisco", "full": "San Francisco, University of", "lsat25": 152, "lsat50": 155, "lsat75": 157, "gpa25": 3.16, "gpa50": 3.47, "gpa75": 3.68, "acc": 42.4, "tui": 59800, "nrt": 59800, "bar": 74.6, "ftlt": 76.7, "cond": 38.4, "enr": 510}, {"id": "south-texas-college-of-law-houston", "name": "South Texas Houston", "full": "South Texas College of Law Houston", "lsat25": 153, "lsat50": 155, "lsat75": 158, "gpa25": 3.08, "gpa50": 3.41, "gpa75": 3.65, "acc": 33.7, "tui": 42960, "nrt": 42960, "bar": 91.1, "ftlt": 92.7, "cond": 38.9, "enr": 1144}, {"id": "suffolk-university", "name": "Suffolk University", "full": "Suffolk University", "lsat25": 152, "lsat50": 155, "lsat75": 159, "gpa25": 3.37, "gpa50": 3.58, "gpa75": 3.79, "acc": 61.9, "tui": 62610, "nrt": 62610, "bar": 79.4, "ftlt": 88.6, "cond": null, "enr": 1337}, {"id": "washburn-university", "name": "Washburn University", "full": "Washburn University", "lsat25": 151, "lsat50": 155, "lsat75": 159, "gpa25": 3.37, "gpa50": 3.68, "gpa75": 3.88, "acc": 46.5, "tui": 21588, "nrt": 33681, "bar": 71.1, "ftlt": 94.7, "cond": 21.7, "enr": 347}, {"id": "west-virginia-university", "name": "West Virginia University", "full": "West Virginia University", "lsat25": 151, "lsat50": 155, "lsat75": 159, "gpa25": 3.34, "gpa50": 3.65, "gpa75": 3.89, "acc": 40.3, "tui": 26370, "nrt": 45666, "bar": 78.3, "ftlt": 87.9, "cond": 0.0, "enr": 310}, {"id": "akron-the-university-of", "name": "Akron University of", "full": "Akron, The University of", "lsat25": 151, "lsat50": 154, "lsat75": 157, "gpa25": 3.22, "gpa50": 3.51, "gpa75": 3.76, "acc": 58.5, "tui": 22359, "nrt": 22359, "bar": 72.1, "ftlt": 91.6, "cond": null, "enr": 473}, {"id": "charleston-school-of-law", "name": "Charleston", "full": "Charleston School of Law", "lsat25": 152, "lsat50": 154, "lsat75": 157, "gpa25": 3.26, "gpa50": 3.51, "gpa75": 3.75, "acc": 50.2, "tui": 48600, "nrt": 48600, "bar": 74.1, "ftlt": 82.0, "cond": null, "enr": 707}, {"id": "elon-university", "name": "Elon University", "full": "Elon University", "lsat25": 151, "lsat50": 154, "lsat75": 158, "gpa25": 3.11, "gpa50": 3.4, "gpa75": 3.7, "acc": 53.2, "tui": 45333, "nrt": 45333, "bar": 76.8, "ftlt": 95.0, "cond": 0.0, "enr": 540}, {"id": "liberty-university", "name": "Liberty University", "full": "Liberty University", "lsat25": 151, "lsat50": 154, "lsat75": 158, "gpa25": 3.36, "gpa50": 3.54, "gpa75": 3.81, "acc": 58.8, "tui": 43150, "nrt": 43150, "bar": 84.8, "ftlt": 75.9, "cond": 0.0, "enr": 326}, {"id": "loyola-university-new-orleans", "name": "Loyola University-New Orleans", "full": "Loyola University-New Orleans", "lsat25": 151, "lsat50": 154, "lsat75": 157, "gpa25": 3.21, "gpa50": 3.47, "gpa75": 3.71, "acc": 50.9, "tui": 55024, "nrt": 55024, "bar": 69.0, "ftlt": 89.4, "cond": 3.6, "enr": 649}, {"id": "mitchell/hamline-school-of-law", "name": "Mitchell/Hamline", "full": "Mitchell/Hamline School of Law", "lsat25": 151, "lsat50": 154, "lsat75": 158, "gpa25": 2.96, "gpa50": 3.29, "gpa75": 3.6, "acc": 51.4, "tui": 55300, "nrt": 55300, "bar": 71.0, "ftlt": 85.3, "cond": null, "enr": 1144}, {"id": "northern-kentucky-university", "name": "Northern Kentucky University", "full": "Northern Kentucky University", "lsat25": 152, "lsat50": 154, "lsat75": 157, "gpa25": 3.15, "gpa50": 3.41, "gpa75": 3.68, "acc": 58.7, "tui": 24388, "nrt": 38454, "bar": 73.9, "ftlt": 88.7, "cond": null, "enr": 412}, {"id": "pace-university", "name": "Pace University", "full": "Pace University", "lsat25": 151, "lsat50": 154, "lsat75": 157, "gpa25": 3.31, "gpa50": 3.54, "gpa75": 3.74, "acc": 44.1, "tui": 56648, "nrt": 56648, "bar": 68.5, "ftlt": 91.7, "cond": 36.3, "enr": 873}, {"id": "willamette-university", "name": "Willamette University", "full": "Willamette University", "lsat25": 151, "lsat50": 154, "lsat75": 157, "gpa25": 3.22, "gpa50": 3.48, "gpa75": 3.7, "acc": 61.4, "tui": 56600, "nrt": 56600, "bar": 66.7, "ftlt": 77.7, "cond": null, "enr": 365}, {"id": "arkansas-at-little-rock-university-of", "name": "Arkansas at Little Rock", "full": "Arkansas at Little Rock, University of", "lsat25": 150, "lsat50": 153, "lsat75": 158, "gpa25": 2.98, "gpa50": 3.41, "gpa75": 3.72, "acc": 54.9, "tui": 13770, "nrt": 37941, "bar": 73.5, "ftlt": 80.4, "cond": 52.9, "enr": 429}, {"id": "creighton-university", "name": "Creighton University", "full": "Creighton University", "lsat25": 150, "lsat50": 153, "lsat75": 156, "gpa25": 3.14, "gpa50": 3.51, "gpa75": 3.74, "acc": 64.5, "tui": 41054, "nrt": 41054, "bar": 72.6, "ftlt": 87.6, "cond": null, "enr": 427}, {"id": "idaho-university-of", "name": "Idaho", "full": "Idaho, University of", "lsat25": 149, "lsat50": 153, "lsat75": 157, "gpa25": 3.07, "gpa50": 3.54, "gpa75": 3.81, "acc": 66.8, "tui": 27516, "nrt": 46752, "bar": 68.4, "ftlt": 84.2, "cond": null, "enr": 502}, {"id": "illinois-chicago-university-of", "name": "Illinois-Chicago", "full": "Illinois-Chicago, University of", "lsat25": 150, "lsat50": 153, "lsat75": 156, "gpa25": 3.13, "gpa50": 3.4, "gpa75": 3.64, "acc": 52.6, "tui": 59230, "nrt": 48600, "bar": 60.1, "ftlt": 82.4, "cond": 48.9, "enr": 1015}, {"id": "lincoln-memorial-university", "name": "Lincoln Memorial University", "full": "Lincoln Memorial University", "lsat25": 150, "lsat50": 153, "lsat75": 156, "gpa25": 3.08, "gpa50": 3.44, "gpa75": 3.68, "acc": 52.2, "tui": 42600, "nrt": 42600, "bar": 63.7, "ftlt": 79.2, "cond": null, "enr": 429}, {"id": "new-england-law/boston", "name": "New England Law/Boston", "full": "New England Law/Boston", "lsat25": 149, "lsat50": 153, "lsat75": 157, "gpa25": 3.06, "gpa50": 3.37, "gpa75": 3.68, "acc": 61.3, "tui": 62896, "nrt": 62896, "bar": 79.2, "ftlt": 78.2, "cond": 26.9, "enr": 1189}, {"id": "north-texas-at-dallas-university-of", "name": "North Texas at Dallas", "full": "North Texas at Dallas, University of", "lsat25": 151, "lsat50": 153, "lsat75": 156, "gpa25": 3.18, "gpa50": 3.41, "gpa75": 3.66, "acc": 24.2, "tui": 19126, "nrt": 32008, "bar": 72.5, "ftlt": 78.5, "cond": null, "enr": 431}, {"id": "st-mary's-university", "name": "St. Mary's University", "full": "St. Mary's University", "lsat25": 151, "lsat50": 153, "lsat75": 156, "gpa25": 3.14, "gpa50": 3.49, "gpa75": 3.69, "acc": 26.0, "tui": 44910, "nrt": 44910, "bar": 65.8, "ftlt": 85.6, "cond": null, "enr": 800}, {"id": "toledo-the-university-of", "name": "Toledo University of", "full": "Toledo, The University of", "lsat25": 150, "lsat50": 153, "lsat75": 156, "gpa25": 3.37, "gpa50": 3.53, "gpa75": 3.79, "acc": 52.5, "tui": 26446, "nrt": 26446, "bar": 72.3, "ftlt": 84.8, "cond": null, "enr": 368}, {"id": "touro-university", "name": "Touro University", "full": "Touro University", "lsat25": 151, "lsat50": 153, "lsat75": 156, "gpa25": 3.05, "gpa50": 3.35, "gpa75": 3.66, "acc": 45.6, "tui": 61000, "nrt": 61000, "bar": 61.7, "ftlt": 89.1, "cond": 59.5, "enr": 604}, {"id": "western-new-england-university", "name": "Western New England University", "full": "Western New England University", "lsat25": 149, "lsat50": 153, "lsat75": 156, "gpa25": 2.84, "gpa50": 3.27, "gpa75": 3.57, "acc": 51.9, "tui": 50320, "nrt": 50320, "bar": 77.2, "ftlt": 84.5, "cond": null, "enr": 324}, {"id": "atlanta's-john-marshall-law-school", "name": "Atlanta's John Marshall Law School", "full": "Atlanta's John Marshall Law School", "lsat25": 150, "lsat50": 152, "lsat75": 155, "gpa25": 2.78, "gpa50": 3.13, "gpa75": 3.49, "acc": 32.6, "tui": 52536, "nrt": 52536, "bar": 68.4, "ftlt": 72.3, "cond": 37.9, "enr": 379}, {"id": "florida-a&m-university", "name": "Florida A&M University", "full": "Florida A&M University", "lsat25": 149, "lsat50": 152, "lsat75": 155, "gpa25": 3.18, "gpa50": 3.48, "gpa75": 3.74, "acc": 34.7, "tui": 13372, "nrt": 32936, "bar": 75.4, "ftlt": 71.6, "cond": null, "enr": 383}, {"id": "massachusetts/dartmouth-university-of", "name": "Massachusetts/Dartmouth", "full": "Massachusetts/Dartmouth, University of", "lsat25": 149, "lsat50": 152, "lsat75": 155, "gpa25": 3.1, "gpa50": 3.36, "gpa75": 3.69, "acc": 52.2, "tui": 31766, "nrt": 41565, "bar": 58.3, "ftlt": 79.3, "cond": null, "enr": 389}, {"id": "mississippi-college", "name": "Mississippi College", "full": "Mississippi College", "lsat25": 148, "lsat50": 152, "lsat75": 155, "gpa25": 3.03, "gpa50": 3.37, "gpa75": 3.73, "acc": 42.0, "tui": 19797, "nrt": 26797, "bar": 63.4, "ftlt": 78.2, "cond": 31.0, "enr": 468}, {"id": "puerto-rico-university-of", "name": "Puerto Rico", "full": "Puerto Rico, University of", "lsat25": 146, "lsat50": 152, "lsat75": 156, "gpa25": 3.57, "gpa50": 3.77, "gpa75": 3.9, "acc": 39.7, "tui": 7700, "nrt": 22700, "bar": 58.3, "ftlt": 70.8, "cond": null, "enr": 444}, {"id": "south-dakota-university-of", "name": "South Dakota", "full": "South Dakota, University of", "lsat25": 149, "lsat50": 152, "lsat75": 156, "gpa25": 3.16, "gpa50": 3.47, "gpa75": 3.81, "acc": 62.5, "tui": 12076, "nrt": 32184, "bar": 72.6, "ftlt": 92.0, "cond": null, "enr": 252}, {"id": "st-thomas-university-(miami)", "name": "St. Thomas University (Miami)", "full": "St. Thomas University (Miami)", "lsat25": 150, "lsat50": 152, "lsat75": 156, "gpa25": 3.12, "gpa50": 3.42, "gpa75": 3.65, "acc": 60.2, "tui": 44730, "nrt": 44730, "bar": 80.9, "ftlt": 77.1, "cond": 56.6, "enr": 998}, {"id": "vermont-law-school", "name": "Vermont Law School", "full": "Vermont Law School", "lsat25": 148, "lsat50": 152, "lsat75": 157, "gpa25": 2.81, "gpa50": 3.25, "gpa75": 3.61, "acc": 58.5, "tui": 55382, "nrt": 55382, "bar": 64.9, "ftlt": 80.1, "cond": null, "enr": 704}, {"id": "western-state-westcliff-university", "name": "Western State, Westcliff University", "full": "Western State, Westcliff University", "lsat25": 150, "lsat50": 152, "lsat75": 156, "gpa25": 3.03, "gpa50": 3.36, "gpa75": 3.62, "acc": 43.7, "tui": 54840, "nrt": 54840, "bar": 63.6, "ftlt": 85.5, "cond": 77.3, "enr": 355}, {"id": "widener-university-delaware-law-school", "name": "Widener University Delaware Law School", "full": "Widener University Delaware Law School", "lsat25": 149, "lsat50": 152, "lsat75": 154, "gpa25": 2.95, "gpa50": 3.33, "gpa75": 3.6, "acc": 59.7, "tui": 57150, "nrt": 57150, "bar": 66.3, "ftlt": 91.3, "cond": null, "enr": 807}, {"id": "capital-university-law-school", "name": "Capital University Law School", "full": "Capital University Law School", "lsat25": 148, "lsat50": 151, "lsat75": 157, "gpa25": 3.07, "gpa50": 3.44, "gpa75": 3.66, "acc": 65.9, "tui": 45066, "nrt": 45066, "bar": 72.2, "ftlt": 74.3, "cond": 6.6, "enr": 483}, {"id": "district-of-columbia-university-of", "name": "District of Columbia", "full": "District of Columbia, University of", "lsat25": 148, "lsat50": 151, "lsat75": 153, "gpa25": 3.05, "gpa50": 3.28, "gpa75": 3.55, "acc": 37.0, "tui": 12438, "nrt": 24874, "bar": 65.6, "ftlt": 77.8, "cond": 72.1, "enr": 236}, {"id": "north-carolina-central-university", "name": "North Carolina Central University", "full": "North Carolina Central University", "lsat25": 149, "lsat50": 151, "lsat75": 154, "gpa25": 3.05, "gpa50": 3.31, "gpa75": 3.56, "acc": 11.2, "tui": 28082, "nrt": 51320, "bar": 55.9, "ftlt": 71.3, "cond": null, "enr": 543}, {"id": "north-dakota-university-of", "name": "North Dakota", "full": "North Dakota, University of", "lsat25": 148, "lsat50": 151, "lsat75": 155, "gpa25": 3.24, "gpa50": 3.48, "gpa75": 3.75, "acc": 63.1, "tui": 15919, "nrt": 31837, "bar": 68.3, "ftlt": 90.1, "cond": 0.0, "enr": 246}, {"id": "oklahoma-city-university", "name": "Oklahoma City University", "full": "Oklahoma City University", "lsat25": 149, "lsat50": 151, "lsat75": 155, "gpa25": 3.21, "gpa50": 3.56, "gpa75": 3.78, "acc": 51.6, "tui": 16995, "nrt": 30840, "bar": 75.2, "ftlt": 85.6, "cond": null, "enr": 433}, {"id": "barry-university", "name": "Barry University", "full": "Barry University", "lsat25": 148, "lsat50": 150, "lsat75": 152, "gpa25": 2.93, "gpa50": 3.23, "gpa75": 3.48, "acc": 55.9, "tui": 42000, "nrt": 42000, "bar": 68.6, "ftlt": 78.4, "cond": 59.0, "enr": 723}, {"id": "faulkner-university", "name": "Faulkner University", "full": "Faulkner University", "lsat25": 148, "lsat50": 150, "lsat75": 154, "gpa25": 2.99, "gpa50": 3.33, "gpa75": 3.66, "acc": 53.9, "tui": 39900, "nrt": 39900, "bar": 71.4, "ftlt": 89.2, "cond": null, "enr": 411}, {"id": "northern-illinois-university", "name": "Northern Illinois University", "full": "Northern Illinois University", "lsat25": 148, "lsat50": 150, "lsat75": 154, "gpa25": 3.17, "gpa50": 3.41, "gpa75": 3.64, "acc": 44.3, "tui": 23667, "nrt": 23667, "bar": 57.1, "ftlt": 84.0, "cond": null, "enr": 352}, {"id": "roger-williams-university", "name": "Roger Williams University", "full": "Roger Williams University", "lsat25": 147, "lsat50": 150, "lsat75": 154, "gpa25": 3.02, "gpa50": 3.43, "gpa75": 3.73, "acc": 61.3, "tui": 47400, "nrt": 47400, "bar": 57.1, "ftlt": 79.7, "cond": 13.8, "enr": 486}, {"id": "texas-southern-university", "name": "Texas Southern University", "full": "Texas Southern University", "lsat25": 148, "lsat50": 150, "lsat75": 152, "gpa25": 2.99, "gpa50": 3.33, "gpa75": 3.62, "acc": 33.1, "tui": 19202, "nrt": 26331, "bar": 72.4, "ftlt": 51.4, "cond": null, "enr": 556}, {"id": "widener-university-commonwealth-law-scho", "name": "Widener University Commonwealth Law School", "full": "Widener University Commonwealth Law School", "lsat25": 147, "lsat50": 150, "lsat75": 153, "gpa25": 2.98, "gpa50": 3.33, "gpa75": 3.64, "acc": 60.4, "tui": 53370, "nrt": 53370, "bar": 54.0, "ftlt": 77.3, "cond": null, "enr": 411}, {"id": "ohio-northern-university", "name": "Ohio Northern University", "full": "Ohio Northern University", "lsat25": 146, "lsat50": 149, "lsat75": 151, "gpa25": 3.06, "gpa50": 3.34, "gpa75": 3.67, "acc": 32.0, "tui": 33900, "nrt": 33900, "bar": 68.4, "ftlt": 79.0, "cond": null, "enr": 319}, {"id": "southern-illinois-university", "name": "Southern Illinois University", "full": "Southern Illinois University", "lsat25": 146, "lsat50": 149, "lsat75": 155, "gpa25": 2.93, "gpa50": 3.38, "gpa75": 3.78, "acc": 56.2, "tui": 16957, "nrt": 16957, "bar": 59.5, "ftlt": 82.1, "cond": null, "enr": 313}, {"id": "cooley-law-school", "name": "Cooley Law School", "full": "Cooley Law School", "lsat25": 145, "lsat50": 147, "lsat75": 151, "gpa25": 2.67, "gpa50": 3.09, "gpa75": 3.45, "acc": 52.9, "tui": 71090, "nrt": 71090, "bar": 51.5, "ftlt": 75.0, "cond": null, "enr": 476}, {"id": "southern-university", "name": "Southern University", "full": "Southern University", "lsat25": 145, "lsat50": 147, "lsat75": 150, "gpa25": 2.86, "gpa50": 3.15, "gpa75": 3.48, "acc": 56.5, "tui": 11338, "nrt": 11338, "bar": 60.3, "ftlt": 63.6, "cond": 54.0, "enr": 809}, {"id": "appalachian-school-of-law", "name": "Appalachian", "full": "Appalachian School of Law", "lsat25": 145, "lsat50": 146, "lsat75": 151, "gpa25": 2.72, "gpa50": 3.2, "gpa75": 3.53, "acc": 60.9, "tui": 41000, "nrt": 41000, "bar": 63.2, "ftlt": 79.5, "cond": null, "enr": 182}, {"id": "inter-american-university-of-puerto-rico", "name": "Inter AmericanPuerto Rico", "full": "Inter American University of Puerto Rico", "lsat25": 140, "lsat50": 144, "lsat75": 148, "gpa25": 3.18, "gpa50": 3.39, "gpa75": 3.65, "acc": 50.9, "tui": 16585, "nrt": 16585, "bar": 48.2, "ftlt": 57.8, "cond": 28.6, "enr": 611}, {"id": "pontifical-catholic-university-of-puerto", "name": "Pontifical CatholicPuerto Rico", "full": "Pontifical Catholic University of Puerto Rico", "lsat25": 136, "lsat50": 139, "lsat75": 143, "gpa25": 2.97, "gpa50": 3.33, "gpa75": 3.61, "acc": 61.5, "tui": 14152, "nrt": 17664, "bar": 54.9, "ftlt": 52.2, "cond": 33.3, "enr": 479}];
+let sortKey = 'lsat50';
+let sortAsc = false;
+
+function pct(v,d=1){ return v ? v.toFixed(d)+'%' : '<span class="na">—</span>'; }
+function num(v){ return v ? v : '<span class="na">—</span>'; }
+function money(v){ return v ? '$'+v.toLocaleString() : '<span class="na">—</span>'; }
+
+function barColor(v){
+  if(!v||v===0) return 'val-dim';
+  if(v>=90) return 'val-orange';
+  if(v>=75) return 'val-blue';
+  if(v>=60) return 'val-amber';
+  return 'val-red';
+}
+function condColor(v){
+  if(v===null||v===undefined) return 'val-dim';
+  if(v<=15) return 'val-orange';
+  if(v<=35) return 'val-amber';
+  return 'val-red';
+}
+function empColor(v){
+  if(!v) return 'val-dim';
+  if(v>=90) return 'val-orange';
+  if(v>=75) return 'val-blue';
+  return 'val-amber';
+}
+
+function setSort(key){
+  if(sortKey===key) sortAsc=!sortAsc;
+  else{sortKey=key;sortAsc=false;}
+  render();
+}
+
+function render(){
+  const q = document.getElementById('search').value.toLowerCase();
+  const sf = document.getElementById('sortSel').value;
+  const bf = document.getElementById('barFilter').value;
+  sortKey = sf;
+
+  let rows = SCHOOLS.filter(s => {
+    if(q && !s.name.toLowerCase().includes(q) && !s.full.toLowerCase().includes(q)) return false;
+    if(bf==='high' && s.bar < 90) return false;
+    if(bf==='mid' && (s.bar < 75 || s.bar >= 90)) return false;
+    if(bf==='low' && s.bar >= 75) return false;
+    return true;
+  });
+
+  rows.sort((a,b)=>{
+    if(sortKey==='name') return sortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+    if(sortKey==='tui') return sortAsc ? b.tui-a.tui : a.tui-b.tui;
+    if(sortKey==='acc') return sortAsc ? b.acc-a.acc : a.acc-b.acc;
+    if(sortKey==='cond'){
+      const av = a.cond??-1, bv = b.cond??-1;
+      return sortAsc ? av-bv : bv-av;
+    }
+    const av = a[sortKey]||0, bv = b[sortKey]||0;
+    return sortAsc ? av-bv : bv-av;
+  });
+
+  document.getElementById('resultCount').textContent = `// Showing ${rows.length} of ${SCHOOLS.length} schools`;
+
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = rows.map(s => `
+    <tr onclick="openModal('${s.id}')">
+      <td class="school-name">${s.name}</td>
+      <td class="val-white">${s.lsat50||'—'}</td>
+      <td class="val-dim">${s.lsat25&&s.lsat75?s.lsat25+'–'+s.lsat75:'—'}</td>
+      <td class="val-white">${s.gpa50||'—'}</td>
+      <td class="${s.acc<=15?'val-red':s.acc<=30?'val-amber':'val-blue'}">${s.acc?s.acc+'%':'—'}</td>
+      <td class="${s.tui>70000?'val-red':s.tui>40000?'val-amber':'val-orange'}">${s.tui?'$'+s.tui.toLocaleString():'—'}</td>
+      <td class="${barColor(s.bar)}">${s.bar?s.bar+'%':'—'}</td>
+      <td class="${empColor(s.ftlt)}">${s.ftlt?s.ftlt+'%':'—'}</td>
+      <td class="${condColor(s.cond)}">${s.cond!==null&&s.cond!==undefined?s.cond+'%':'—'}</td>
+    </tr>`).join('');
+
+  // Update sorted header
+  document.querySelectorAll('thead th').forEach(th=>{
+    th.classList.remove('sorted','asc');
+  });
+}
+
+function openModal(id){
+  const s = SCHOOLS.find(x=>x.id===id);
+  if(!s) return;
+
+  const condHtml = s.cond!==null&&s.cond!==undefined
+    ? `<div class="mg-item"><span class="mg-key">Elimination rate</span><span class="mg-val ${condColor(s.cond)}">${s.cond}%</span></div>`
+    : `<div class="mg-item"><span class="mg-key">Elimination rate</span><span class="na">Not reported</span></div>`;
+
+  document.getElementById('modal').innerHTML = `
+    <button class="modal-close" onclick="document.getElementById('modalOverlay').classList.remove('open')">✕</button>
+    <div class="modal-header">
+      <div class="modal-eyebrow">// Mars · ABA 509 Data · 2025</div>
+      <div class="modal-name">${s.full}</div>
+    </div>
+    <div class="modal-body">
+      <div class="metric-group mg-blue">
+        <div class="mg-label">// Admissions · 2025</div>
+        <div class="mg-items">
+          <div class="mg-item"><span class="mg-key">LSAT 25th percentile</span><span class="mg-val val-blue">${s.lsat25||'—'}</span></div>
+          <div class="mg-item"><span class="mg-key">LSAT 50th percentile</span><span class="mg-val val-white">${s.lsat50||'—'}</span></div>
+          <div class="mg-item"><span class="mg-key">LSAT 75th percentile</span><span class="mg-val val-blue">${s.lsat75||'—'}</span></div>
+          <div class="mg-item"><span class="mg-key">GPA 50th percentile</span><span class="mg-val val-white">${s.gpa50||'—'}</span></div>
+          <div class="mg-item"><span class="mg-key">GPA range (25–75th)</span><span class="mg-val val-dim">${s.gpa25&&s.gpa75?s.gpa25+'–'+s.gpa75:'—'}</span></div>
+          <div class="mg-item"><span class="mg-key">Acceptance rate</span><span class="mg-val ${s.acc<=15?'val-red':s.acc<=30?'val-amber':'val-blue'}">${s.acc?s.acc+'%':'—'}</span></div>
+          <div class="mg-item"><span class="mg-key">Total JD enrollment</span><span class="mg-val val-dim">${s.enr?s.enr.toLocaleString():'—'}</span></div>
+        </div>
+      </div>
+      <div class="metric-group mg-red">
+        <div class="mg-label">// Tuition & Scholarships · 2025</div>
+        <div class="mg-items">
+          <div class="mg-item"><span class="mg-key">Resident tuition</span><span class="mg-val ${s.tui>70000?'val-red':s.tui>40000?'val-amber':'val-orange'}">${s.tui?'$'+s.tui.toLocaleString():'—'}</span></div>
+          <div class="mg-item"><span class="mg-key">Non-resident tuition</span><span class="mg-val val-dim">${s.nrt&&s.nrt!==s.tui?'$'+s.nrt.toLocaleString():'Same as resident'}</span></div>
+          ${condHtml}
+        </div>
+      </div>
+      <div class="metric-group mg-green">
+        <div class="mg-label">// Bar Passage · 2024</div>
+        <div class="mg-items">
+          <div class="mg-item"><span class="mg-key">First-time passage rate</span><span class="mg-val ${barColor(s.bar)}">${s.bar?s.bar+'%':'—'}</span></div>
+          <div class="mg-item"><span class="mg-key">National average</span><span class="mg-val val-dim">~79%</span></div>
+          <div class="mg-item"><span class="mg-key">vs. national avg</span><span class="mg-val ${s.bar>=79?'val-orange':'val-red'}">${s.bar?(s.bar>79?'+':'')+(s.bar-79).toFixed(1)+'pt':'—'}</span></div>
+        </div>
+      </div>
+      <div class="metric-group mg-amber">
+        <div class="mg-label">// Employment · 2024</div>
+        <div class="mg-items">
+          <div class="mg-item"><span class="mg-key">FTLT employment rate</span><span class="mg-val ${empColor(s.ftlt)}">${s.ftlt?s.ftlt+'%':'—'}</span></div>
+          <div class="mg-item"><span class="mg-key">Full-time long-term jobs at 10 months post-grad</span><span class="mg-val val-dim">JD-required positions</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <span class="modal-note">// Source: ABA Standard 509 Required Disclosures · Data may vary by year</span>
+      <a href="https://skool.com/509alpha" class="modal-cta" target="_blank">Join 509α →</a>
+    </div>`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal(e){
+  if(e.target.id==='modalOverlay') document.getElementById('modalOverlay').classList.remove('open');
+}
+
+// Init
+render();
+</script>
+</body>
+</html>
